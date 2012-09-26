@@ -7,7 +7,8 @@ import java.util.List;
 public class AnnotatedImage {
 	private String id;
 	private BufferedImage img;
-	private List<Arrow> annotations;
+	private float[] verteces;
+	private int[] triangulation;
 	
 	public String getId() {
 		return id;
@@ -21,19 +22,8 @@ public class AnnotatedImage {
 		this.img = img;
 	}
 	
-	public List<Arrow> getAnnotations() {
-		return annotations;
-	}
-	
-	public AnnotatedImage(String id, BufferedImage img, List<Arrow> annotations) {
-		super();
-		this.img = img;
-		this.annotations = annotations;
-	}
-	
 	public AnnotatedImage(String id, BufferedImage img) {
 		super();
 		this.img = img;
-		this.annotations = new ArrayList<Arrow>();
 	}
 }
