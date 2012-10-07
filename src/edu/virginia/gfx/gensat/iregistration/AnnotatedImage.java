@@ -7,8 +7,6 @@ import java.util.List;
 public class AnnotatedImage {
 	private String id;
 	private BufferedImage img;
-	private float[] verteces;
-	private int[] triangulation;
 	
 	public String getId() {
 		return id;

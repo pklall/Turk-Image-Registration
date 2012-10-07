@@ -24,35 +24,28 @@ import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.glu.GLU;
 
+import com.jogamp.opengl.util.texture.TextureData;
+import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
+
 public class Main extends JApplet {
-
-	/**
-	 * Create the applet.
-	 */
-	public Main() {
-	}
+	private static final long serialVersionUID = 1L;
 	
-	public static void main(String[] args) {
-		JFrame frame = new JFrame();
+	private GLProfile profile;
+	private Warp warp;
+	private WarpRenderer renderer;
 
-		// setup OpenGL Version 2
-		GLProfile profile = GLProfile.get(GLProfile.GL2);
+	protected void initWarpRenderer() {
+		float[] affine = new float[] { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
+				0, 0, 1 };
+		float[] points = new float[] { 0, 0, 0, 1, 1, 1, 1, 0 };
+		int[] triangles = new int[] { 0, 1, 2, 0, 2, 3 };
+		warp = new Warp(affine, points, triangles);
 
-		// The canvas is the widget that's drawn in the JFrame
-		GLCanvas glCanvas = new GLCanvas(new GLCapabilities(profile));
-		glCanvas.addGLEventListener(new Renderer());
-		glCanvas.setSize(300, 300);
-		frame.getContentPane().add(glCanvas);
-		frame.setSize(600, 400);
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
-
-	protected void initAnnotatedImgComponents() {
 		BufferedImage img = null;
 		try {
-			img = ImageIO.read(new URL(
-					"http://www.treatpeople.com/image.php?type=P&id=16242"));
+			img = ImageIO
+					.read(new URL(
+							"http://www.vnvlvokc.com/ow_userfiles/plugins/shoppro/images/product_1.jpg"));
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -60,6 +53,10 @@ public class Main extends JApplet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		TextureData warpImg = AWTTextureIO.newTextureData(profile, img, false);
+		TextureData targetImg = warpImg;
+		renderer = new WarpRenderer(warpImg, targetImg, warp);
 	}
 
 	public void init() {
@@ -67,11 +64,35 @@ public class Main extends JApplet {
 		getContentPane().setLayout(new BorderLayout(0, 0));
 
 		// setup OpenGL Version 2
-		GLProfile profile = GLProfile.get(GLProfile.GL2);
+		profile = GLProfile.get(GLProfile.GL2);
 
 		// The canvas is the widget that's drawn in the JFrame
 		GLCanvas glCanvas = new GLCanvas(new GLCapabilities(profile));
-		glCanvas.addGLEventListener(new Renderer());
+
+		initWarpRenderer();
+
+		glCanvas.addGLEventListener(new GLEventListener() {
+			@Override
+			public void display(GLAutoDrawable d) {
+				renderer.render(d.getGL().getGL2());
+			}
+
+			@Override
+			public void dispose(GLAutoDrawable d) {
+				renderer.destroy(d.getGL().getGL2());
+			}
+
+			@Override
+			public void init(GLAutoDrawable d) {
+				renderer.init(d.getGL().getGL2());
+			}
+
+			@Override
+			public void reshape(GLAutoDrawable d, int x, int y,
+					int width, int height) {
+				d.getGL().glViewport(x, y, width, height);
+			}
+		});
 		glCanvas.setSize(300, 300);
 
 		getContentPane().add(glCanvas);
@@ -95,7 +116,7 @@ public class Main extends JApplet {
 	}
 }
 
-class Renderer implements GLEventListener {
+class TestRenderer implements GLEventListener {
 	private GLU glu = new GLU();
 
 	public void display(GLAutoDrawable gLDrawable) {
@@ -136,8 +157,8 @@ class Renderer implements GLEventListener {
 				+ ", width = " + width + ", height = " + height);
 		final GL2 gl = gLDrawable.getGL().getGL2();
 
-		if (height <= 0) // avoid a divide by zero error!
-		{
+		// avoid a divide by zero error!
+		if (height <= 0) {
 			height = 1;
 		}
 
