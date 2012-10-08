@@ -78,55 +78,55 @@ public class Matrix {
 		result[resultOffset + 0] = lhs[lhsOffset + 0] * rhs[rhsOffset + 0]
 				+ lhs[lhsOffset + 4] * rhs[rhsOffset + 1] + lhs[lhsOffset + 8]
 				* rhs[rhsOffset + 2] + lhs[lhsOffset + 12] * rhs[rhsOffset + 3];
-		result[resultOffset + 1] = lhs[lhsOffset + 0] * rhs[rhsOffset + 4]
-				+ lhs[lhsOffset + 4] * rhs[rhsOffset + 5] + lhs[lhsOffset + 8]
-				* rhs[rhsOffset + 6] + lhs[lhsOffset + 12] * rhs[rhsOffset + 7];
-		result[resultOffset + 2] = lhs[lhsOffset + 8] * rhs[rhsOffset + 10]
-				+ lhs[lhsOffset + 12] * rhs[rhsOffset + 11]
-				+ lhs[lhsOffset + 0] * rhs[rhsOffset + 8] + lhs[lhsOffset + 4]
-				* rhs[rhsOffset + 9];
-		result[resultOffset + 3] = lhs[lhsOffset + 0] * rhs[rhsOffset + 12]
-				+ lhs[lhsOffset + 4] * rhs[rhsOffset + 13] + lhs[lhsOffset + 8]
-				* rhs[rhsOffset + 14] + lhs[lhsOffset + 12]
-				* rhs[rhsOffset + 15];
-		result[resultOffset + 4] = lhs[lhsOffset + 1] * rhs[rhsOffset + 0]
+		result[resultOffset + 1] = lhs[lhsOffset + 1] * rhs[rhsOffset + 0]
 				+ lhs[lhsOffset + 5] * rhs[rhsOffset + 1] + lhs[lhsOffset + 9]
 				* rhs[rhsOffset + 2] + lhs[lhsOffset + 13] * rhs[rhsOffset + 3];
+		result[resultOffset + 2] = lhs[lhsOffset + 2] * rhs[rhsOffset + 0]
+				+ lhs[lhsOffset + 6] * rhs[rhsOffset + 1] + lhs[lhsOffset + 10]
+				* rhs[rhsOffset + 2] + lhs[lhsOffset + 14] * rhs[rhsOffset + 3];
+		result[resultOffset + 3] = lhs[lhsOffset + 3] * rhs[rhsOffset + 0]
+				+ lhs[lhsOffset + 7] * rhs[rhsOffset + 1] + lhs[lhsOffset + 11]
+				* rhs[rhsOffset + 2] + lhs[lhsOffset + 15] * rhs[rhsOffset + 3];
+		result[resultOffset + 4] = lhs[lhsOffset + 0] * rhs[rhsOffset + 4]
+				+ lhs[lhsOffset + 4] * rhs[rhsOffset + 5] + lhs[lhsOffset + 8]
+				* rhs[rhsOffset + 6] + lhs[lhsOffset + 12] * rhs[rhsOffset + 7];
 		result[resultOffset + 5] = lhs[lhsOffset + 1] * rhs[rhsOffset + 4]
 				+ lhs[lhsOffset + 5] * rhs[rhsOffset + 5] + lhs[lhsOffset + 9]
 				* rhs[rhsOffset + 6] + lhs[lhsOffset + 13] * rhs[rhsOffset + 7];
-		result[resultOffset + 6] = lhs[lhsOffset + 9] * rhs[rhsOffset + 10]
+		result[resultOffset + 6] = lhs[lhsOffset + 2] * rhs[rhsOffset + 4]
+				+ lhs[lhsOffset + 6] * rhs[rhsOffset + 5] + lhs[lhsOffset + 10]
+				* rhs[rhsOffset + 6] + lhs[lhsOffset + 14] * rhs[rhsOffset + 7];
+		result[resultOffset + 7] = lhs[lhsOffset + 3] * rhs[rhsOffset + 4]
+				+ lhs[lhsOffset + 7] * rhs[rhsOffset + 5] + lhs[lhsOffset + 11]
+				* rhs[rhsOffset + 6] + lhs[lhsOffset + 15] * rhs[rhsOffset + 7];
+		result[resultOffset + 8] = lhs[lhsOffset + 8] * rhs[rhsOffset + 10]
+				+ lhs[lhsOffset + 12] * rhs[rhsOffset + 11]
+				+ lhs[lhsOffset + 0] * rhs[rhsOffset + 8] + lhs[lhsOffset + 4]
+				* rhs[rhsOffset + 9];
+		result[resultOffset + 9] = lhs[lhsOffset + 9] * rhs[rhsOffset + 10]
 				+ lhs[lhsOffset + 13] * rhs[rhsOffset + 11]
 				+ lhs[lhsOffset + 1] * rhs[rhsOffset + 8] + lhs[lhsOffset + 5]
 				* rhs[rhsOffset + 9];
-		result[resultOffset + 7] = lhs[lhsOffset + 1] * rhs[rhsOffset + 12]
-				+ lhs[lhsOffset + 5] * rhs[rhsOffset + 13] + lhs[lhsOffset + 9]
-				* rhs[rhsOffset + 14] + lhs[lhsOffset + 13]
-				* rhs[rhsOffset + 15];
-		result[resultOffset + 8] = lhs[lhsOffset + 2] * rhs[rhsOffset + 0]
-				+ lhs[lhsOffset + 6] * rhs[rhsOffset + 1] + lhs[lhsOffset + 10]
-				* rhs[rhsOffset + 2] + lhs[lhsOffset + 14] * rhs[rhsOffset + 3];
-		result[resultOffset + 9] = lhs[lhsOffset + 2] * rhs[rhsOffset + 4]
-				+ lhs[lhsOffset + 6] * rhs[rhsOffset + 5] + lhs[lhsOffset + 10]
-				* rhs[rhsOffset + 6] + lhs[lhsOffset + 14] * rhs[rhsOffset + 7];
 		result[resultOffset + 10] = lhs[lhsOffset + 10] * rhs[rhsOffset + 10]
 				+ lhs[lhsOffset + 14] * rhs[rhsOffset + 11]
 				+ lhs[lhsOffset + 2] * rhs[rhsOffset + 8] + lhs[lhsOffset + 6]
 				* rhs[rhsOffset + 9];
-		result[resultOffset + 11] = lhs[lhsOffset + 2] * rhs[rhsOffset + 12]
-				+ lhs[lhsOffset + 6] * rhs[rhsOffset + 13]
-				+ lhs[lhsOffset + 10] * rhs[rhsOffset + 14]
-				+ lhs[lhsOffset + 14] * rhs[rhsOffset + 15];
-		result[resultOffset + 12] = lhs[lhsOffset + 3] * rhs[rhsOffset + 0]
-				+ lhs[lhsOffset + 7] * rhs[rhsOffset + 1] + lhs[lhsOffset + 11]
-				* rhs[rhsOffset + 2] + lhs[lhsOffset + 15] * rhs[rhsOffset + 3];
-		result[resultOffset + 13] = lhs[lhsOffset + 3] * rhs[rhsOffset + 4]
-				+ lhs[lhsOffset + 7] * rhs[rhsOffset + 5] + lhs[lhsOffset + 11]
-				* rhs[rhsOffset + 6] + lhs[lhsOffset + 15] * rhs[rhsOffset + 7];
-		result[resultOffset + 14] = lhs[lhsOffset + 11] * rhs[rhsOffset + 10]
+		result[resultOffset + 11] = lhs[lhsOffset + 11] * rhs[rhsOffset + 10]
 				+ lhs[lhsOffset + 15] * rhs[rhsOffset + 11]
 				+ lhs[lhsOffset + 3] * rhs[rhsOffset + 8] + lhs[lhsOffset + 7]
 				* rhs[rhsOffset + 9];
+		result[resultOffset + 12] = lhs[lhsOffset + 0] * rhs[rhsOffset + 12]
+				+ lhs[lhsOffset + 4] * rhs[rhsOffset + 13] + lhs[lhsOffset + 8]
+				* rhs[rhsOffset + 14] + lhs[lhsOffset + 12]
+				* rhs[rhsOffset + 15];
+		result[resultOffset + 13] = lhs[lhsOffset + 1] * rhs[rhsOffset + 12]
+				+ lhs[lhsOffset + 5] * rhs[rhsOffset + 13] + lhs[lhsOffset + 9]
+				* rhs[rhsOffset + 14] + lhs[lhsOffset + 13]
+				* rhs[rhsOffset + 15];
+		result[resultOffset + 14] = lhs[lhsOffset + 2] * rhs[rhsOffset + 12]
+				+ lhs[lhsOffset + 6] * rhs[rhsOffset + 13]
+				+ lhs[lhsOffset + 10] * rhs[rhsOffset + 14]
+				+ lhs[lhsOffset + 14] * rhs[rhsOffset + 15];
 		result[resultOffset + 15] = lhs[lhsOffset + 3] * rhs[rhsOffset + 12]
 				+ lhs[lhsOffset + 7] * rhs[rhsOffset + 13]
 				+ lhs[lhsOffset + 11] * rhs[rhsOffset + 14]
@@ -160,13 +160,24 @@ public class Matrix {
 	 *             resultVecOffset + 4 > resultVec.length or lhsMatOffset + 16 >
 	 *             lhsMat.length or rhsVecOffset + 4 > rhsVec.length.
 	 */
-	public static void multiplyMV(float[] resultVec,
-			int resultVecOffset, float[] lhs, int lhsOffset,
-			float[] rhs, int rhsOffset) {
-		resultVec[resultVecOffset + 0] = lhs[lhsOffset+0] * rhs[rhsOffset+0] + lhs[lhsOffset+4] * rhs[rhsOffset+1] + lhs[lhsOffset+8] * rhs[rhsOffset+2] + lhs[lhsOffset+12] * rhs[rhsOffset+3];
-		resultVec[resultVecOffset + 1] = lhs[lhsOffset+1] * rhs[rhsOffset+0] + lhs[lhsOffset+5] * rhs[rhsOffset+1] + lhs[lhsOffset+9] * rhs[rhsOffset+2] + lhs[lhsOffset+13] * rhs[rhsOffset+3];
-		resultVec[resultVecOffset + 2] = lhs[lhsOffset+2] * rhs[rhsOffset+0] + lhs[lhsOffset+6] * rhs[rhsOffset+1] + lhs[lhsOffset+10] * rhs[rhsOffset+2] + lhs[lhsOffset+14] * rhs[rhsOffset+3];
-		resultVec[resultVecOffset + 3] = lhs[lhsOffset+3] * rhs[rhsOffset+0] + lhs[lhsOffset+7] * rhs[rhsOffset+1] + lhs[lhsOffset+11] * rhs[rhsOffset+2] + lhs[lhsOffset+15] * rhs[rhsOffset+3];
+	public static void multiplyMV(float[] resultVec, int resultVecOffset,
+			float[] lhs, int lhsOffset, float[] rhs, int rhsOffset) {
+		resultVec[resultVecOffset + 0] = lhs[lhsOffset + 0]
+				* rhs[rhsOffset + 0] + lhs[lhsOffset + 4] * rhs[rhsOffset + 1]
+				+ lhs[lhsOffset + 8] * rhs[rhsOffset + 2] + lhs[lhsOffset + 12]
+				* rhs[rhsOffset + 3];
+		resultVec[resultVecOffset + 1] = lhs[lhsOffset + 1]
+				* rhs[rhsOffset + 0] + lhs[lhsOffset + 5] * rhs[rhsOffset + 1]
+				+ lhs[lhsOffset + 9] * rhs[rhsOffset + 2] + lhs[lhsOffset + 13]
+				* rhs[rhsOffset + 3];
+		resultVec[resultVecOffset + 2] = lhs[lhsOffset + 2]
+				* rhs[rhsOffset + 0] + lhs[lhsOffset + 6] * rhs[rhsOffset + 1]
+				+ lhs[lhsOffset + 10] * rhs[rhsOffset + 2]
+				+ lhs[lhsOffset + 14] * rhs[rhsOffset + 3];
+		resultVec[resultVecOffset + 3] = lhs[lhsOffset + 3]
+				* rhs[rhsOffset + 0] + lhs[lhsOffset + 7] * rhs[rhsOffset + 1]
+				+ lhs[lhsOffset + 11] * rhs[rhsOffset + 2]
+				+ lhs[lhsOffset + 15] * rhs[rhsOffset + 3];
 	}
 
 	/**

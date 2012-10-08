@@ -2,6 +2,7 @@ package edu.virginia.gfx.gensat.iregistration;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL2;
@@ -30,8 +31,11 @@ public class WarpRenderer implements Renderable {
 		
 		float[] total = new float[16];
 		Matrix.multiplyMM(total, 0, parent, 0, warp.affine, 0);
+		System.out.println("parent = " + Arrays.toString(parent));
+		System.out.println("affine = " + Arrays.toString(warp.affine));
+		System.out.println("total = " + Arrays.toString(total));
 		shader.use(gl, warp.dstVertices, warp.srcVertices, warp.triangles,
-				total, warpTex);
+				total, warpTex, 0xffffffff);
 	}
 
 	@Override

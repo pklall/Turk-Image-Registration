@@ -1,5 +1,6 @@
 package edu.virginia.gfx.gensat.iregistration;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -38,7 +39,7 @@ public class SquareRenderer implements Renderable {
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 		
-		shader.use(gl, sqVert, sqTex, triangles, parent, tex);
+		shader.use(gl, sqVert, sqTex, triangles, parent, tex, 0xffffffff);
 	}
 
 	@Override

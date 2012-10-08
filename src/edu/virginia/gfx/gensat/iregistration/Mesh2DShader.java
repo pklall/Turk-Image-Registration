@@ -1,5 +1,6 @@
 package edu.virginia.gfx.gensat.iregistration;
 
+import java.awt.Color;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -22,12 +23,14 @@ public class Mesh2DShader extends Shader {
 			"	gl_Position = uVertMatrix * vec4(aVert, 1, 1);",//
 			"	vTexCoord = aTexCoord;",//
 			"}" };
-	private static final String[] FRAGMENT = new String[] { "",//
+	private static final String[] FRAGMENT = new String[] {
+			"",//
 			"uniform sampler2D uTex;",//
 			"uniform mat3 uTexMatrix;",//
 			"varying vec2 vTexCoord;",//
+			"uniform vec4 uColor;",//
 			"void main() {",//
-			"   gl_FragColor = texture2D(uTex, (uTexMatrix * vec3(vTexCoord, 1)).xy);",//
+			"   gl_FragColor = texture2D(uTex, (uTexMatrix * vec3(vTexCoord, 1)).xy) * uColor;",//
 			"}" };
 
 	public Mesh2DShader(GL2 gl) {
@@ -39,6 +42,7 @@ public class Mesh2DShader extends Shader {
 	private int uTexHandle;
 	private int uVertMatrixHandle;
 	private int uTexMatrixHandle;
+	private int uColorHandle;
 
 	private final float[] tmpMat = new float[16];
 
@@ -49,10 +53,11 @@ public class Mesh2DShader extends Shader {
 		uTexHandle = gl.glGetUniformLocation(program, "uTex");
 		uVertMatrixHandle = gl.glGetUniformLocation(program, "uVertMatrix");
 		uTexMatrixHandle = gl.glGetUniformLocation(program, "uTexMatrix");
+		uColorHandle = gl.glGetUniformLocation(program, "uColor");
 	}
 
 	public void use(GL2 gl, float[] vertex, float[] texture, int[] index,
-			float[] vertexMatrix, Texture warpTexture) {
+			float[] vertexMatrix, Texture warpTexture, int color) {
 		gl.glUseProgram(program);
 
 		gl.glVertexAttribPointer(aVertHandle, 2, GL2.GL_FLOAT, false, 0,
@@ -72,15 +77,18 @@ public class Mesh2DShader extends Shader {
 		// or if JOGL decides to randomly flip our texture (which happens
 		// regularly)
 		TextureCoords t = warpTexture.getImageTexCoords();
-		float[] texCoordMatrix = new float[]{
-			t.right() - t.left(), 0, t.left(),
-			0, t.top() - t.bottom(), t.bottom(),
-			0, 0, 1
-		};
-		
+		float[] texCoordMatrix = new float[] { t.right() - t.left(), 0,
+				t.left(), 0, t.top() - t.bottom(), t.bottom(), 0, 0, 1 };
+
 		gl.glUniformMatrix3fv(uTexMatrixHandle, 1, true, texCoordMatrix, 0);
 
 		gl.glUniformMatrix4fv(uVertMatrixHandle, 1, false, vertexMatrix, 0);
+
+		gl.glUniform4f(uColorHandle, //
+				((color >> 24) & 0xff) / 255.0f, // red
+				((color >> 16) & 0xff) / 255.0f, // green
+				((color >> 8) & 0xff) / 255.0f, // blue
+				((color >> 0) & 0xff) / 255.0f); // alpha
 
 		gl.glDrawElements(GL2.GL_TRIANGLES, index.length, GL2.GL_UNSIGNED_INT,
 				(Buffer) IntBuffer.wrap(index));

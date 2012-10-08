@@ -38,7 +38,7 @@ public class Main extends JApplet {
 	protected void initWarpRenderer() {
 		float[] affine = new float[16];
 		Matrix.setIdentityM(affine, 0);
-		float[] points = new float[] { 0, 0, 1, 0, 1, 1, 0, 1 };
+		float[] points = new float[] { 0, 0, 0, 1, 1, 1, 1, 0 };
 		int[] triangles = new int[] { 0, 1, 2, 0, 2, 3 };
 		warp = new Warp(affine, points, triangles);
 
