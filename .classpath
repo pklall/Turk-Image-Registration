@@ -47,6 +47,5 @@
 	<classpathentry kind="lib" path="lib/jogl-all-noawt.jar"/>
 	<classpathentry kind="lib" path="lib/jogl-test.jar"/>
 	<classpathentry kind="lib" path="lib/xstream-1.4.3.jar"/>
-	<classpathentry kind="lib" path="lib/ejml-0.20.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

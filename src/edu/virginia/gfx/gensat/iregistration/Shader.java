@@ -12,8 +12,6 @@ import com.jogamp.opengl.util.GLBuffers;
  * fragment shaders).
  */
 public abstract class Shader {
-	private static final String LOGTAG = Shader.class.getName();
-
 	private String[] vertex;
 	private String[] fragment;
 

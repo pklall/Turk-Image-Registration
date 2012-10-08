@@ -19,7 +19,7 @@ public class Warp {
 	 * Constructor
 	 * 
 	 * @param affine
-	 *            A row-major 4x4 affine transformation matrix
+	 *            A column-major 4x4 affine transformation matrix
 	 * @param vertices
 	 *            A buffer of point data with (x, y) pairs packed together
 	 * @param triangles

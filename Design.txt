@@ -22,7 +22,7 @@ Specification
     Warp
         Combination of affine transformation and translated control points.
         All control points are in terms of image space [0, 1]x[0, 1] with
-        (0, 0) in the top left corner.
+        (0, 0) in the **bottom left corner**.
         Warp = {Affine, ControlPoints}
         Affine = {(dx1, dy1), (dx2, dy2)}
             {(1, 0), (0, 1)} -> identity affine transform
@@ -71,7 +71,9 @@ Design
         Handles mouse input events to properly deal with 
     class AffineTool implements Tool
         Renders an overlay of an affine transformation representation
-    class Editor
+    class Editor extends Applet
         Toggles between MeshTool and AffineTool
         Renders with WarpRenderer and overlays the current tool
         Passes mouse events to the current tool
+    class Viewer
+        Standalone command-line utility to warp images

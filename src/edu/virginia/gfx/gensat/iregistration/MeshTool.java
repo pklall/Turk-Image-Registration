@@ -8,12 +8,7 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
-import org.ejml.alg.dense.mult.MatrixVectorMult;
-import org.ejml.data.Matrix64F;
-import org.ejml.ops.MatrixFeatures;
-import org.ejml.simple.SimpleMatrix;
-
-public class MeshTool implements Tool {
+public class MeshTool implements WarpEditorTool {
 	private final BufferedImage warpImg;
 	private final BufferedImage targetImg;
 	private final Warp warp;
@@ -65,7 +60,7 @@ public class MeshTool implements Tool {
 	}
 
 	@Override
-	public void render(GL2 gl) {
+	public void render(GL2 gl, float[] parent) {
 		// TODO Auto-generated method stub
 
 	}

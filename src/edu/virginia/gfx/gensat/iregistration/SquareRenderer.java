@@ -1,7 +1,10 @@
 package edu.virginia.gfx.gensat.iregistration;
 
 import java.awt.image.BufferedImage;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL2;
@@ -9,16 +12,23 @@ import javax.media.opengl.GL2;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureData;
 
-public class WarpRenderer implements Renderable {
-	private final TextureData warpImg;
-	private final Warp warp;
-
-	private Texture warpTex;
+public class SquareRenderer implements Renderable {
+	private final float[] sqVert = new float[]{
+		0, 0, 1, 0, 1, 1, 0, 1
+	};
+	private final float[] sqTex = new float[]{
+		0, 0, 1, 0, 1, 1, 0, 1
+	};
+	private final int[] triangles = new int[]{
+		0, 1, 2, 0, 2, 3
+	};
+	
+	private final TextureData img;
 	private Mesh2DShader shader;
+	private Texture tex;
 
-	public WarpRenderer(TextureData warpImg, Warp warp) {
-		this.warpImg = warpImg;
-		this.warp = warp;
+	public SquareRenderer(TextureData img) {
+		this.img = img;
 	}
 
 	@Override
@@ -28,21 +38,18 @@ public class WarpRenderer implements Renderable {
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 		
-		float[] total = new float[16];
-		Matrix.multiplyMM(total, 0, parent, 0, warp.affine, 0);
-		shader.use(gl, warp.dstVertices, warp.srcVertices, warp.triangles,
-				total, warpTex);
+		shader.use(gl, sqVert, sqTex, triangles, parent, tex);
 	}
 
 	@Override
 	public void destroy(GL2 gl) {
-		warpTex.destroy(gl);
+		tex.destroy(gl);
 		shader.destroy(gl);
 	}
 
 	@Override
 	public void init(GL2 gl) {
-		warpTex = new Texture(gl, warpImg);
+		tex = new Texture(gl, img);
 		shader = new Mesh2DShader(gl);
 	}
 }
