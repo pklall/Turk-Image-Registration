@@ -1,35 +1,25 @@
 package edu.virginia.gfx.gensat.iregistration;
 
-import javax.imageio.ImageIO;
-import javax.swing.JApplet;
-import javax.swing.JFrame;
-import javax.swing.JSlider;
-import javax.swing.JToolBar;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 
-import javax.swing.JPanel;
+import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JApplet;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSeparator;
+import javax.swing.JSlider;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
-import javax.media.opengl.GL2;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLProfile;
-import javax.media.opengl.awt.GLCanvas;
-import javax.media.opengl.glu.GLU;
-
-import com.jogamp.opengl.util.texture.TextureData;
-import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 
 public class Main extends JApplet {
 	private static final long serialVersionUID = 1L;
@@ -123,9 +113,46 @@ public class Main extends JApplet {
 				editor.setAlpha(alphaSlider.getValue());
 			}
 		});
+		
+		// FIXME These are terrible UI labels
+		final JRadioButton editWarpRadioButton = new JRadioButton("Edit Warp");
+		editWarpRadioButton.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				if(editWarpRadioButton.isSelected()) {
+					editor.setEditorModeWarp();
+				}
+			}
+		});
+		final JRadioButton editAffineRadioButton = new JRadioButton("Edit Affine");
+		editAffineRadioButton.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				if(editAffineRadioButton.isSelected()) {
+					editor.setEditorModeAffine();
+				}
+			}
+		});
+		final ButtonGroup editButtonGroup = new ButtonGroup();
+		editButtonGroup.add(editWarpRadioButton);
+		editButtonGroup.add(editAffineRadioButton);
+		final JPanel topPanel = new JPanel();
+		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+		topPanel.add(editAffineRadioButton);
+		topPanel.add(editWarpRadioButton);
+		
+		// start with the affine button selected
+		editAffineRadioButton.setSelected(true);
+		editor.setEditorModeAffine();
+		editWarpRadioButton.setSelected(false);
+		
+		topPanel.add(new JSeparator(SwingConstants.VERTICAL));
+		topPanel.add(new JLabel("Transparency: "));
+		topPanel.add(alphaSlider);
+		
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+		getContentPane().add(topPanel);
 		getContentPane().add(editor);
-		getContentPane().add(alphaSlider);
 	}
 
 	public void start() {

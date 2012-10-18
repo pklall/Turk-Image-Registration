@@ -12,15 +12,17 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
+import javax.media.opengl.awt.GLJPanel;
 
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 
-public class Editor extends GLCanvas implements GLEventListener, MouseListener,
+public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 		MouseMotionListener {
 	private static final long serialVersionUID = 1L;
-	
+
 	private final Warp warp;
+
 	private final TextureData warpImg;
 	private final TextureData targetImg;
 
@@ -28,7 +30,7 @@ public class Editor extends GLCanvas implements GLEventListener, MouseListener,
 		warpRenderer.setAlpha(t);
 		repaint();
 	}
-	
+
 	private static final float PADDING = 0.15f; // 15% padding on all sides
 
 	// Matrix to transform [0, 1]x[0,1] (origin at bottom left) into
@@ -64,6 +66,16 @@ public class Editor extends GLCanvas implements GLEventListener, MouseListener,
 		targetRenderer = new SquareRenderer(this.targetImg);
 
 		activeTool = meshTool;
+	}
+
+	public void setEditorModeAffine() {
+		activeTool = affineTool;
+		repaint();
+	}
+
+	public void setEditorModeWarp() {
+		activeTool = meshTool;
+		repaint();
 	}
 
 	@Override
@@ -102,9 +114,17 @@ public class Editor extends GLCanvas implements GLEventListener, MouseListener,
 		meshTool.init(gl);
 		affineTool.init(gl);
 	}
+	
+	@Override
+	public void setSize(int width, int height) {
+		super.setSize(width, height);
+		
+	}
 
 	@Override
 	public void reshape(GLAutoDrawable d, int x, int y, int width, int height) {
+		System.out.println(String.format("reshape(%d, %d, %d, %d)", x, y, width, height));
+		
 		d.getGL().glViewport(x, y, width, height);
 
 		Matrix.setIdentityM(mat, 0);
