@@ -16,6 +16,11 @@ public class WarpRenderer implements Renderable {
 
 	private Texture warpTex;
 	private Mesh2DShader shader;
+	
+	private int color = 0xffffffff;
+	public void setAlpha(int alpha) {
+		color = 0xffffff00 + (alpha & 0x000000ff);
+	}
 
 	public WarpRenderer(TextureData warpImg, Warp warp) {
 		this.warpImg = warpImg;
@@ -24,18 +29,10 @@ public class WarpRenderer implements Renderable {
 
 	@Override
 	public void render(GL2 gl, float[] parent) {
-		System.out.println("Drawing warp");
-		gl.glClearColor(1, 0, 0, 1);
-		gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
-		gl.glDisable(GL2.GL_DEPTH_TEST);
-		
 		float[] total = new float[16];
 		Matrix.multiplyMM(total, 0, parent, 0, warp.affine, 0);
-		System.out.println("parent = " + Arrays.toString(parent));
-		System.out.println("affine = " + Arrays.toString(warp.affine));
-		System.out.println("total = " + Arrays.toString(total));
 		shader.use(gl, warp.dstVertices, warp.srcVertices, warp.triangles,
-				total, warpTex, 0xffffffff);
+				total, warpTex, color);
 	}
 
 	@Override

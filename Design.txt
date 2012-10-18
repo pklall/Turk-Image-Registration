@@ -25,7 +25,7 @@ Specification
         (0, 0) in the **bottom left corner**.
         Warp = {Affine, ControlPoints}
         Affine = {(dx1, dy1), (dx2, dy2)}
-            {(1, 0), (0, 1)} -> identity affine transform
+            {(1, 0), (0, 1)} -> identify affine transform
         ControlPoints = Src, Dst, Trianglulation
         Src = {(x1, y1), (x2, y2), ...}
         Dst = {(x1, y1), (x2, y2), ...}
@@ -41,8 +41,9 @@ Specification
         States:
             Edit Mode
                 Affine tool
+                    Allows editing 2 points
                     Restrict to translation, rotation, and scaling (no shear)
-                    Draw box 
+                    Draw box
                 Mesh tool
                     Draw mesh
                         unselected points in blue
@@ -51,6 +52,8 @@ Specification
                         selected point being pulled too far is red
                     On mouse down:
                         Select nearest point
+                            Implement by looping through all points
+                            Transform to screen space, then compare distances
                         Selected point is green
                     On mouse move:
                         If selected point wouldn't cross triangulation boundary

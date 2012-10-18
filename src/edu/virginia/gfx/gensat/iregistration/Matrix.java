@@ -162,22 +162,22 @@ public class Matrix {
 	 */
 	public static void multiplyMV(float[] resultVec, int resultVecOffset,
 			float[] lhs, int lhsOffset, float[] rhs, int rhsOffset) {
-		resultVec[resultVecOffset + 0] = lhs[lhsOffset + 0]
-				* rhs[rhsOffset + 0] + lhs[lhsOffset + 4] * rhs[rhsOffset + 1]
-				+ lhs[lhsOffset + 8] * rhs[rhsOffset + 2] + lhs[lhsOffset + 12]
-				* rhs[rhsOffset + 3];
-		resultVec[resultVecOffset + 1] = lhs[lhsOffset + 1]
-				* rhs[rhsOffset + 0] + lhs[lhsOffset + 5] * rhs[rhsOffset + 1]
-				+ lhs[lhsOffset + 9] * rhs[rhsOffset + 2] + lhs[lhsOffset + 13]
-				* rhs[rhsOffset + 3];
-		resultVec[resultVecOffset + 2] = lhs[lhsOffset + 2]
-				* rhs[rhsOffset + 0] + lhs[lhsOffset + 6] * rhs[rhsOffset + 1]
-				+ lhs[lhsOffset + 10] * rhs[rhsOffset + 2]
+		float a = lhs[lhsOffset + 0] * rhs[rhsOffset + 0] + lhs[lhsOffset + 4]
+				* rhs[rhsOffset + 1] + lhs[lhsOffset + 8] * rhs[rhsOffset + 2]
+				+ lhs[lhsOffset + 12] * rhs[rhsOffset + 3];
+		float b = lhs[lhsOffset + 1] * rhs[rhsOffset + 0] + lhs[lhsOffset + 5]
+				* rhs[rhsOffset + 1] + lhs[lhsOffset + 9] * rhs[rhsOffset + 2]
+				+ lhs[lhsOffset + 13] * rhs[rhsOffset + 3];
+		float c = lhs[lhsOffset + 2] * rhs[rhsOffset + 0] + lhs[lhsOffset + 6]
+				* rhs[rhsOffset + 1] + lhs[lhsOffset + 10] * rhs[rhsOffset + 2]
 				+ lhs[lhsOffset + 14] * rhs[rhsOffset + 3];
-		resultVec[resultVecOffset + 3] = lhs[lhsOffset + 3]
-				* rhs[rhsOffset + 0] + lhs[lhsOffset + 7] * rhs[rhsOffset + 1]
-				+ lhs[lhsOffset + 11] * rhs[rhsOffset + 2]
+		float d = lhs[lhsOffset + 3] * rhs[rhsOffset + 0] + lhs[lhsOffset + 7]
+				* rhs[rhsOffset + 1] + lhs[lhsOffset + 11] * rhs[rhsOffset + 2]
 				+ lhs[lhsOffset + 15] * rhs[rhsOffset + 3];
+		resultVec[resultVecOffset + 0] = a;
+		resultVec[resultVecOffset + 1] = b;
+		resultVec[resultVecOffset + 2] = c;
+		resultVec[resultVecOffset + 3] = d;
 	}
 
 	/**

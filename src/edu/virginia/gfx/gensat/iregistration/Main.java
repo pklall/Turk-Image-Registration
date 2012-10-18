@@ -3,6 +3,7 @@ package edu.virginia.gfx.gensat.iregistration;
 import javax.imageio.ImageIO;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
+import javax.swing.JSlider;
 import javax.swing.JToolBar;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -12,9 +13,12 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 import javax.swing.JPanel;
 import javax.swing.BoxLayout;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
@@ -29,24 +33,65 @@ import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 
 public class Main extends JApplet {
 	private static final long serialVersionUID = 1L;
+	private Editor editor;
 
-	private GLProfile profile;
-	private Warp warp;
-	private WarpRenderer warpRenderer;
-	private SquareRenderer sqRenderer;
-
-	protected void initWarpRenderer() {
+	protected void initEditor() {
 		float[] affine = new float[16];
 		Matrix.setIdentityM(affine, 0);
-		float[] points = new float[] { 0, 0, 0, 1, 1, 1, 1, 0 };
-		int[] triangles = new int[] { 0, 1, 2, 0, 2, 3 };
-		warp = new Warp(affine, points, triangles);
+		// float[] points = new float[] { 0, 0, 0, 1, 1, 1, 1, 0 };
+		// int[] triangles = new int[] { 0, 1, 2, 0, 2, 3 };
 
-		BufferedImage img = null;
+		// create a grid
+		int grid = 5; // 3x3
+		float[] points = new float[(grid + 1) * (grid + 1) * 2];
+		for (int x = 0; x <= grid; x++) {
+			for (int y = 0; y <= grid; y++) {
+				points[(y * (grid + 1) + x) * 2 + 0] = (float) x * 1.0f
+						/ (float) grid;
+				points[(y * (grid + 1) + x) * 2 + 1] = (float) y * 1.0f
+						/ (float) grid;
+			}
+		}
+		System.out.println("Points: " + Arrays.toString(points));
+		int[] triangles = new int[grid * grid * 3 * 2];
+		// top-left triangles
+		for (int y = 0; y < grid; y++) {
+			for (int x = 0; x < grid; x++) {
+				triangles[(y * grid + x) * 3 + 0] = y * (grid + 1) + x;
+				triangles[(y * grid + x) * 3 + 1] = y * (grid + 1) + (x + 1);
+				triangles[(y * grid + x) * 3 + 2] = (y + 1) * (grid + 1) + x;
+			}
+		}
+		// top-left triangles
+		int offset = grid * grid * 3;
+		for (int y = 0; y < grid; y++) {
+			for (int x = 0; x < grid; x++) {
+				triangles[(y * grid + x) * 3 + 0 + offset] = y * (grid + 1)
+						+ (x + 1);
+				triangles[(y * grid + x) * 3 + 1 + offset] = (y + 1)
+						* (grid + 1) + (x + 1);
+				triangles[(y * grid + x) * 3 + 2 + offset] = (y + 1)
+						* (grid + 1) + x;
+			}
+		}
+
+		Warp warp = new Warp(affine, points, triangles);
+
+		BufferedImage imgWarp = null;
+		BufferedImage imgTarget = null;
 		try {
-			img = ImageIO
-					.read(new URL(
-							"http://www.vnvlvokc.com/ow_userfiles/plugins/shoppro/images/product_1.jpg"));
+			// test image
+			// imgWarp = ImageIO.read(new URL(
+			// "http://colorvisiontesting.com/plate%20with%205.jpg"));
+			// bean
+			// imgWarp = ImageIO .read(new URL(
+			// "http://cdn6.fotosearch.com/bthumb/FDS/FDS106/redkid4.jpg"));
+			imgWarp = ImageIO
+					.read(getClass().getResourceAsStream("/brain.jpg"));
+			// imgTarget = ImageIO .read(new URL(
+			// "http://www.vnvlvokc.com/ow_userfiles/plugins/shoppro/images/product_1.jpg"));
+			imgTarget = ImageIO.read(new URL( "http://www.gensat.org/atlas/ADULT_ATLAS_07.jpg"));
+			// imgTarget = ImageIO .read(getClass().getResourceAsStream("/brain2.jpg"));
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -55,64 +100,32 @@ public class Main extends JApplet {
 			e.printStackTrace();
 		}
 
-		TextureData warpImg = AWTTextureIO.newTextureData(profile, img, false);
-		TextureData targetImg = warpImg;
-		warpRenderer = new WarpRenderer(warpImg, warp);
-
-		// FIXME
-		sqRenderer = new SquareRenderer(targetImg);
+		try {
+			editor = new Editor(warp, imgWarp, imgTarget);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void init() {
 		System.out.println("initializing... ");
 		getContentPane().setLayout(new BorderLayout(0, 0));
 
-		// setup OpenGL Version 2
-		profile = GLProfile.get(GLProfile.GL2);
+		initEditor();
 
-		// The canvas is the widget that's drawn in the JFrame
-		GLCanvas glCanvas = new GLCanvas(new GLCapabilities(profile));
-
-		initWarpRenderer();
-
-		glCanvas.addGLEventListener(new GLEventListener() {
+		final JSlider alphaSlider = new JSlider();
+		alphaSlider.setMaximum(255);
+		alphaSlider.setMinimum(0);
+		alphaSlider.setValue(128);
+		alphaSlider.addChangeListener(new ChangeListener() {
 			@Override
-			public void display(GLAutoDrawable d) {
-				GL2 gl = d.getGL().getGL2();
-				gl.glEnable(GL2.GL_BLEND);
-
-				float[] mat = new float[16];
-				Matrix.setIdentityM(mat, 0);
-				Matrix.scaleM(mat, 0, 2, 2, 1);
-				Matrix.translateM(mat, 0, -0.5f, -0.5f, 0);
-
-				// sqRenderer.render(gl, mat);
-				warpRenderer.render(gl, mat);
-			}
-
-			@Override
-			public void dispose(GLAutoDrawable d) {
-				GL2 gl = d.getGL().getGL2();
-				sqRenderer.destroy(gl);
-				warpRenderer.destroy(gl);
-			}
-
-			@Override
-			public void init(GLAutoDrawable d) {
-				GL2 gl = d.getGL().getGL2();
-				warpRenderer.init(gl);
-				sqRenderer.init(gl);
-			}
-
-			@Override
-			public void reshape(GLAutoDrawable d, int x, int y, int width,
-					int height) {
-				d.getGL().glViewport(x, y, width, height);
+			public void stateChanged(ChangeEvent arg0) {
+				editor.setAlpha(alphaSlider.getValue());
 			}
 		});
-		glCanvas.setSize(300, 300);
-
-		getContentPane().add(glCanvas);
+		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+		getContentPane().add(editor);
+		getContentPane().add(alphaSlider);
 	}
 
 	public void start() {

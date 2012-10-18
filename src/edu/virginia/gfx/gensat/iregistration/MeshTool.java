@@ -1,79 +1,133 @@
 package edu.virginia.gfx.gensat.iregistration;
 
-import java.awt.Color;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.media.opengl.GL2;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLEventListener;
+import javax.media.opengl.GLProfile;
+
+import com.jogamp.opengl.util.texture.TextureData;
+import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 
 public class MeshTool implements WarpEditorTool {
-	private final BufferedImage warpImg;
-	private final BufferedImage targetImg;
 	private final Warp warp;
 
-	// used to color unselected warp points
-	private static final int WARP_POINT_COLOR = Color.BLUE.getRGB();
-	// used to color the point which is currently selected
-	private static final int SELECTED_POINT_COLOR = Color.GREEN.getRGB();
-	// used to color points which the user is attempting to pull out of their
-	// valid range (locations which would force a change in the triangulation)
-	private static final int ERROR_POINT_COLOR = Color.RED.getRGB();
+	// for rendering unselected points
+	private PointRenderer unselectedPointRenderer;
 
-	private static final int MESH_COLOR = Color.LIGHT_GRAY.getRGB();
+	// for rendering selected points
+	private PointRenderer selectedPointRenderer;
+	private final float[] selectedPointBuffer = new float[2];
 
-	public MeshTool(BufferedImage warpImg, BufferedImage targetImg, Warp warp) {
-		this.warpImg = warpImg;
-		this.targetImg = targetImg;
+	/**
+	 * The index of the currently-selected/hovered point.
+	 */
+	private int selectedPoint = 0;
+
+	/**
+	 * True if we are currently moving the selected point
+	 */
+	private boolean moving = false;
+
+	public MeshTool(Warp warp, GLProfile profile) throws IOException {
 		this.warp = warp;
+		// load texture data
+		InputStream solidStream = getClass().getResourceAsStream(
+				"/circle_full.png");
+		TextureData solid = AWTTextureIO.newTextureData(profile, solidStream,
+				false, "png");
+
+		InputStream hollowStream = getClass().getResourceAsStream(
+				"/circle_hollow.png");
+		TextureData hollow = AWTTextureIO.newTextureData(profile, hollowStream,
+				false, "png");
+
+		// initialize renderers
+		selectedPointRenderer = new PointRenderer(solid, selectedPointBuffer);
+		unselectedPointRenderer = new PointRenderer(hollow, warp.dstVertices);
+		unselectedPointRenderer.color = 0x0000ffff;
+	}
+
+	protected void selectPoint(int index) {
+		selectedPoint = index;
+	}
+
+	private void screenSpaceToWarpSpace(float[] xyzw, float[] mat) {
+		float[] totMat = new float[16];
+		float[] invMat = new float[16];
+		Matrix.multiplyMM(totMat, 0, warp.affine, 0, mat, 0);
+		Matrix.invertM(invMat, 0, totMat, 0);
+		Matrix.multiplyMV(xyzw, 0, invMat, 0, xyzw, 0);
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-
+	public void mouseDown(float mx, float my, int buttons, float[] mat) {
+		moving = true;
+		mouseMove(mx, my, mat);
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
+	public void mouseUp(float mx, float my, int buttons, float[] mat) {
+		moving = false;
 	}
 
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
+	public void mouseMove(float mx, float my, float[] mat) {
+		// transform mouse coordinates from screen space to source-warp space
+		// total matrix
+		float[] xyzw = new float[4];
+		xyzw[0] = mx;
+		xyzw[1] = my;
+		xyzw[2] = 1;
+		xyzw[3] = 1;
+		screenSpaceToWarpSpace(xyzw, mat);
+		mx = xyzw[0];
+		my = xyzw[1];
 
-	}
+		if (moving) {
+			warp.dstVertices[selectedPoint * 2 + 0] = mx;
+			warp.dstVertices[selectedPoint * 2 + 1] = my;
+		}
 
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-
+		// find the closest point to the mouse cursor
+		float closestDistance = Float.MAX_VALUE;
+		int closestPointIndex = 0;
+		for (int i = 0; i < warp.dstVertices.length / 2; i++) {
+			float x = warp.dstVertices[i * 2];
+			float y = warp.dstVertices[i * 2 + 1];
+			// compute distance in screen space
+			float dx = mx - x;
+			float dy = my - y;
+			float dist = dx * dx + dy * dy;
+			if (dist < closestDistance) {
+				closestDistance = dist;
+				closestPointIndex = i;
+			}
+		}
+		selectedPoint = closestPointIndex;
 	}
 
 	@Override
 	public void render(GL2 gl, float[] parent) {
-		// TODO Auto-generated method stub
-
+		unselectedPointRenderer.render(gl, parent);
+		selectedPointBuffer[0] = warp.dstVertices[selectedPoint * 2 + 0];
+		selectedPointBuffer[1] = warp.dstVertices[selectedPoint * 2 + 1];
+		if (moving) {
+			selectedPointRenderer.color = 0x00ff00ff;
+		} else {
+			selectedPointRenderer.color = 0xCC3232ff;
+		}
+		selectedPointRenderer.render(gl, parent);
 	}
 
 	@Override
 	public void destroy(GL2 gl) {
-		// TODO Auto-generated method stub
-
+		unselectedPointRenderer.destroy(gl);
+		selectedPointRenderer.destroy(gl);
 	}
 
 	@Override
 	public void init(GL2 gl) {
-		// TODO Auto-generated method stub
-
+		unselectedPointRenderer.init(gl);
+		selectedPointRenderer.init(gl);
 	}
 }

@@ -34,11 +34,6 @@ public class SquareRenderer implements Renderable {
 
 	@Override
 	public void render(GL2 gl, float[] parent) {
-		System.out.println("Drawing warp");
-		gl.glClearColor(1, 0, 0, 1);
-		gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
-		gl.glDisable(GL2.GL_DEPTH_TEST);
-		
 		shader.use(gl, sqVert, sqTex, triangles, parent, tex, 0xffffffff);
 	}
 
