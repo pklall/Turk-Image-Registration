@@ -1,6 +1,7 @@
 package edu.virginia.gfx.gensat.iregistration;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -137,7 +138,7 @@ public class Main extends JApplet {
 		editButtonGroup.add(editWarpRadioButton);
 		editButtonGroup.add(editAffineRadioButton);
 		final JPanel topPanel = new JPanel();
-		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.LINE_AXIS));
 		topPanel.add(editAffineRadioButton);
 		topPanel.add(editWarpRadioButton);
 		
@@ -146,7 +147,9 @@ public class Main extends JApplet {
 		editor.setEditorModeAffine();
 		editWarpRadioButton.setSelected(false);
 		
-		topPanel.add(new JSeparator(SwingConstants.VERTICAL));
+		JSeparator sep = new JSeparator(SwingConstants.VERTICAL);
+		sep.setMinimumSize(new Dimension(20, 0));
+		topPanel.add(sep);
 		topPanel.add(new JLabel("Transparency: "));
 		topPanel.add(alphaSlider);
 		

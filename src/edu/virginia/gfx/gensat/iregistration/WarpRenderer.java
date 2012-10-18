@@ -1,10 +1,5 @@
 package edu.virginia.gfx.gensat.iregistration;
 
-import java.awt.image.BufferedImage;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-
-import javax.imageio.ImageIO;
 import javax.media.opengl.GL2;
 
 import com.jogamp.opengl.util.texture.Texture;
