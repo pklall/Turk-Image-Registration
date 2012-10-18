@@ -99,19 +99,10 @@ public class Main extends JApplet {
 		}
 	}
 
-	protected void initAnnotationPanel() throws IOException {
-		AnnotatedImage template = new AnnotatedImage("template",
-				ImageIO.read(new File(
-						"1810041L15Rik_adult_S_DAB_10X_08_cryo.med.jpg")));
-		new AnnotatedImage("", null, null);
-		AnnotationPanel p = new AnnotationPanel(template, template);
-	}
-
 	public void init() {
 		System.out.println("initializing... ");
 		getContentPane().setLayout(new BorderLayout(0, 0));
-<<<<<<< HEAD
-
+		
 		initEditor();
 
 		final JSlider alphaSlider = new JSlider();
@@ -166,14 +157,6 @@ public class Main extends JApplet {
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		getContentPane().add(topPanel);
 		getContentPane().add(editor);
-=======
-		// initAnnotatedImgComponents();
-		try {
-			initAnnotationPanel();
-		} catch (Exception e) {
-			System.err.println("");
-		}
->>>>>>> 4c843c547c01666edaafea218dd24b5bfcdacb30
 	}
 
 	public void start() {
