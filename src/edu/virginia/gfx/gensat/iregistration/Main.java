@@ -78,11 +78,11 @@ public class Main extends JApplet {
 			// bean
 			// imgWarp = ImageIO .read(new URL(
 			// "http://cdn6.fotosearch.com/bthumb/FDS/FDS106/redkid4.jpg"));
-			imgWarp = ImageIO
+			imgTarget = ImageIO
 					.read(getClass().getResourceAsStream("/brain.jpg"));
 			// imgTarget = ImageIO .read(new URL(
 			// "http://www.vnvlvokc.com/ow_userfiles/plugins/shoppro/images/product_1.jpg"));
-			imgTarget = ImageIO.read(new URL( "http://www.gensat.org/atlas/ADULT_ATLAS_07.jpg"));
+			imgWarp= ImageIO.read(new URL( "http://www.gensat.org/atlas/ADULT_ATLAS_07.jpg"));
 			// imgTarget = ImageIO .read(getClass().getResourceAsStream("/brain2.jpg"));
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -150,7 +150,8 @@ public class Main extends JApplet {
 		
 		JSeparator sep = new JSeparator(SwingConstants.VERTICAL);
 		sep.setMinimumSize(new Dimension(20, 0));
-		topPanel.add(sep);
+		// FIXME separator causes strange layout behavior
+		// topPanel.add(sep);
 		topPanel.add(new JLabel("Transparency: "));
 		topPanel.add(alphaSlider);
 		
