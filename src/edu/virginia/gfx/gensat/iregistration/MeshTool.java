@@ -23,12 +23,12 @@ public class MeshTool extends RenderablePointSelector implements
 		InputStream solidStream = MeshTool.class
 				.getResourceAsStream("/circle_full.png");
 		TextureData solid = AWTTextureIO.newTextureData(profile, solidStream,
-				false, "png");
+				true, "png");
 
 		InputStream hollowStream = MeshTool.class
 				.getResourceAsStream("/circle_hollow.png");
 		TextureData hollow = AWTTextureIO.newTextureData(profile, hollowStream,
-				false, "png");
+				true, "png");
 		return new MeshTool(warp, hollow, solid, solid, profile);
 	}
 

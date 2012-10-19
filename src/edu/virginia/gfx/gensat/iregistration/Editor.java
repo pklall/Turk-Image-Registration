@@ -11,7 +11,6 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
-import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.awt.GLJPanel;
 
 import com.jogamp.opengl.util.texture.TextureData;
@@ -60,9 +59,9 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 
 		this.warp = warp;
 		this.warpImg = AWTTextureIO.newTextureData(getGLProfile(), warpImg,
-				false);
+				true);
 		this.targetImg = AWTTextureIO.newTextureData(getGLProfile(), targetImg,
-				false);
+				true);
 		meshTool = MeshTool.create(warp, getGLProfile());
 		affineTool = new AffineTool(warp, getGLProfile());
 		warpRenderer = new WarpRenderer(this.warpImg, warp);
