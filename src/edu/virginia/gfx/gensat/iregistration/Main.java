@@ -32,6 +32,11 @@ public class Main extends JApplet {
 	protected void initEditor() {
 		float[] affine = new float[16];
 		Matrix.setIdentityM(affine, 0);
+		// FIXME delete this
+		Matrix.scaleM(affine, 0, 1.25f, 0.50f, 1);
+		Matrix.translateM(affine, 0, 0.25f, 0.25f, 0);
+		Matrix.rotateM(affine, 0, 45, 0, 0, 1);
+		
 		// float[] points = new float[] { 0, 0, 0, 1, 1, 1, 1, 0 };
 		// int[] triangles = new int[] { 0, 1, 2, 0, 2, 3 };
 

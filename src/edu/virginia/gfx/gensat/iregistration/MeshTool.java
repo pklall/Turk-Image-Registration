@@ -3,12 +3,14 @@ package edu.virginia.gfx.gensat.iregistration;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.media.opengl.GL2;
 import javax.media.opengl.GLProfile;
 
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 
 import edu.virginia.gfx.gensat.iregistration.util.InteractiveRenderable;
+import edu.virginia.gfx.gensat.iregistration.util.Matrix;
 import edu.virginia.gfx.gensat.iregistration.util.RenderablePointSelector;
 
 public class MeshTool extends RenderablePointSelector implements
@@ -55,5 +57,33 @@ public class MeshTool extends RenderablePointSelector implements
 	@Override
 	protected void pointSelected(int p, float x, float y) {
 		// do nothing
+	}
+
+	@Override
+	public void mouseDown(float mx, float my, int buttons, float[] mat) {
+		float[] tot = new float[16];
+		Matrix.multiplyMM(tot, 0, mat, 0, warp.affine, 0);
+		super.mouseDown(mx, my, buttons, tot);
+	}
+
+	@Override
+	public void mouseUp(float mx, float my, int buttons, float[] mat) {
+		float[] tot = new float[16];
+		Matrix.multiplyMM(tot, 0, mat, 0, warp.affine, 0);
+		super.mouseUp(mx, my, buttons, tot);
+	}
+
+	@Override
+	public void mouseMove(float mx, float my, float[] mat) {
+		float[] tot = new float[16];
+		Matrix.multiplyMM(tot, 0, mat, 0, warp.affine, 0);
+		super.mouseMove(mx, my, tot);
+	}
+
+	@Override
+	public void render(GL2 gl, float[] parent) {
+		float[] tot = new float[16];
+		Matrix.multiplyMM(tot, 0, parent, 0, warp.affine, 0);
+		super.render(gl, tot);
 	}
 }

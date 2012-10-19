@@ -21,13 +21,6 @@ public class AffineTool implements InteractiveRenderable {
 	// to handle clipping under extreme translations)
 	private static final float PADDING = 0.30f;
 
-	// for rendering corner points
-	private PointRenderer rotatePointRenderer;
-	// for rendering scale points
-	private PointRenderer scalePointRenderer;
-	// for rendering translation points
-	private PointRenderer translatePointRenderer;
-
 	// use the bottom left and top right corners for rotation handles
 	private final float[] rotatePoints = new float[] { 0, 0, 1, 1 };
 	// use the center for translation handles

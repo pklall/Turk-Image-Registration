@@ -30,7 +30,7 @@ public abstract class RenderablePointSelector extends PointSelector implements
 	}
 
 	@Override
-	public final void render(GL2 gl, float[] parent) {
+	public void render(GL2 gl, float[] parent) {
 		pointRenderer.render(gl, parent);
 		curPointBuffer[0] = pointBuf[getSelectedPoint() * 2 + 0];
 		curPointBuffer[1] = pointBuf[getSelectedPoint() * 2 + 1];

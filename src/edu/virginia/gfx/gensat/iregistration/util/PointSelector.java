@@ -45,7 +45,7 @@ public abstract class PointSelector implements GLMouseEventListener {
 	}
 
 	@Override
-	public final void mouseDown(float mx, float my, int buttons, float[] mat) {
+	public void mouseDown(float mx, float my, int buttons, float[] mat) {
 		moving = true;
 
 		// transform mouse coordinates from screen space to source-warp space
@@ -58,23 +58,23 @@ public abstract class PointSelector implements GLMouseEventListener {
 		float[] invMat = new float[16];
 		Matrix.invertM(invMat, 0, mat, 0);
 		Matrix.multiplyMV(xyzw, 0, invMat, 0, xyzw, 0);
-		float x = xyzw[0];
-		float y = xyzw[1];
+		mx = xyzw[0];
+		my = xyzw[1];
 
-		pointSelected(selectedPoint, x, y);
+		pointSelected(selectedPoint, mx, my);
 
 		if (moveOnSelect) {
-			mouseMove(mx, my, mat);
+			pointDragged(selectedPoint, mx, my);
 		}
 	}
 
 	@Override
-	public final void mouseUp(float mx, float my, int buttons, float[] mat) {
+	public void mouseUp(float mx, float my, int buttons, float[] mat) {
 		moving = false;
 	}
 
 	@Override
-	public final void mouseMove(float mx, float my, float[] mat) {
+	public void mouseMove(float mx, float my, float[] mat) {
 		// transform mouse coordinates from screen space to source-warp space
 		// total matrix
 		float[] xyzw = new float[4];
