@@ -17,6 +17,10 @@ import javax.media.opengl.awt.GLJPanel;
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 
+import edu.virginia.gfx.gensat.iregistration.util.InteractiveRenderable;
+import edu.virginia.gfx.gensat.iregistration.util.Matrix;
+import edu.virginia.gfx.gensat.iregistration.util.SquareRenderer;
+
 public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 		MouseMotionListener {
 	private static final long serialVersionUID = 1L;
@@ -44,7 +48,7 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 	private MeshTool meshTool;
 	private AffineTool affineTool;
 
-	private WarpEditorTool activeTool;
+	private InteractiveRenderable activeTool;
 
 	public Editor(Warp warp, BufferedImage warpImg, BufferedImage targetImg)
 			throws IOException {
@@ -60,7 +64,7 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 		this.targetImg = AWTTextureIO.newTextureData(getGLProfile(), targetImg,
 				false);
 		meshTool = new MeshTool(warp, getGLProfile());
-		affineTool = new AffineTool(warp);
+		affineTool = new AffineTool(warp, getGLProfile());
 		warpRenderer = new WarpRenderer(this.warpImg, warp);
 		setAlpha(128);
 		targetRenderer = new SquareRenderer(this.targetImg);

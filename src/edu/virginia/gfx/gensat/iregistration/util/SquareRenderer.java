@@ -1,4 +1,4 @@
-package edu.virginia.gfx.gensat.iregistration;
+package edu.virginia.gfx.gensat.iregistration.util;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -12,6 +12,7 @@ import javax.media.opengl.GL2;
 
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureData;
+
 
 public class SquareRenderer implements Renderable {
 	private final float[] sqVert = new float[]{

@@ -1,4 +1,4 @@
-package edu.virginia.gfx.gensat.iregistration;
+package edu.virginia.gfx.gensat.iregistration.util;
 
 import java.util.Arrays;
 
@@ -6,6 +6,7 @@ import javax.media.opengl.GL2;
 
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureData;
+
 
 public class PointRenderer implements Renderable {
 	private final float[] sqVert = new float[] { -0.5f, -0.5f, 0.5f, -0.5f,

@@ -23,6 +23,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import edu.virginia.gfx.gensat.iregistration.util.Matrix;
+
 public class Main extends JApplet {
 	private static final long serialVersionUID = 1L;
 	private Editor editor;

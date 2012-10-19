@@ -1,4 +1,4 @@
-package edu.virginia.gfx.gensat.iregistration;
+package edu.virginia.gfx.gensat.iregistration.util;
 
 import java.awt.Color;
 import java.nio.Buffer;
@@ -9,6 +9,7 @@ import javax.media.opengl.GL2;
 
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureCoords;
+
 
 /**
  * A shader for rendering textured 2D triangle meshes

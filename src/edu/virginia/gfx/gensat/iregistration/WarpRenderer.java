@@ -5,6 +5,10 @@ import javax.media.opengl.GL2;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureData;
 
+import edu.virginia.gfx.gensat.iregistration.util.Matrix;
+import edu.virginia.gfx.gensat.iregistration.util.Mesh2DShader;
+import edu.virginia.gfx.gensat.iregistration.util.Renderable;
+
 public class WarpRenderer implements Renderable {
 	private final TextureData warpImg;
 	private final Warp warp;

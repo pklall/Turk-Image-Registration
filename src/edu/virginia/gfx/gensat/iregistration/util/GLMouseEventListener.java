@@ -1,4 +1,4 @@
-package edu.virginia.gfx.gensat.iregistration;
+package edu.virginia.gfx.gensat.iregistration.util;
 
 public interface GLMouseEventListener {
 	/**
