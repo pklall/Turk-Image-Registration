@@ -11,15 +11,33 @@ import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 
 import edu.virginia.gfx.gensat.iregistration.util.InteractiveRenderable;
 import edu.virginia.gfx.gensat.iregistration.util.Matrix;
-import edu.virginia.gfx.gensat.iregistration.util.RenderablePointSelector;
+import edu.virginia.gfx.gensat.iregistration.util.PointRenderer;
+import edu.virginia.gfx.gensat.iregistration.util.PointSelector;
+import edu.virginia.gfx.gensat.iregistration.util.PointSelector.PointSelectorEventListener;
+import edu.virginia.gfx.gensat.iregistration.util.PointSelectorEvent;
+import edu.virginia.gfx.gensat.iregistration.util.PointSelectorEvent.PointState;
 
-public class MeshTool extends RenderablePointSelector implements
-		InteractiveRenderable {
+public class MeshTool extends PointSelector implements InteractiveRenderable,
+		PointSelectorEventListener {
 	private final Warp warp;
 
-	public static MeshTool create(Warp warp, GLProfile profile)
-			throws IOException {
-		// load texture data
+	private static final int TEX_NONE = 0;
+	private static final int TEX_HOVER = 1;
+	private static final int TEX_SELECT = 1;
+
+	private static final int COLOR_NONE = 0x0000ffff; // blue
+	private static final int COLOR_HOVER = 0xff7700ff; // orange
+	private static final int COLOR_SELECT = 0x00ff00ff; // green
+
+	private final PointRenderer pointRenderer;
+
+	public MeshTool(Warp warp, GLProfile profile) throws IOException {
+		super(warp.dstVertices);
+		setEventListener(this);
+		setMoveOnSelect(true);
+
+		this.warp = warp;
+
 		InputStream solidStream = MeshTool.class
 				.getResourceAsStream("/circle_full.png");
 		TextureData solid = AWTTextureIO.newTextureData(profile, solidStream,
@@ -29,34 +47,8 @@ public class MeshTool extends RenderablePointSelector implements
 				.getResourceAsStream("/circle_hollow.png");
 		TextureData hollow = AWTTextureIO.newTextureData(profile, hollowStream,
 				true, "png");
-		return new MeshTool(warp, hollow, solid, solid, profile);
-	}
-
-	protected MeshTool(Warp warp, TextureData unselected, TextureData hover,
-			TextureData selected, GLProfile profile) throws IOException {
-		super(warp.dstVertices, unselected, hover, selected, profile);
-		setMoveOnSelect(true);
-
-		this.warp = warp;
-		pointRenderer.color = 0x0000ffff; // blue
-		selectedPointRenderer.color = 0x00ff00ff; // green
-		hoverPointRenderer.color = 0xff2400ff; // orange
-	}
-
-	@Override
-	protected void pointDragged(int p, float x, float y) {
-		warp.dstVertices[p * 2 + 0] = x;
-		warp.dstVertices[p * 2 + 1] = y;
-	}
-
-	@Override
-	protected void pointHovered(int p, float x, float y) {
-		// do nothing
-	}
-
-	@Override
-	protected void pointSelected(int p, float x, float y) {
-		// do nothing
+		this.pointRenderer = new PointRenderer(new TextureData[] { hollow,
+				solid }, warp.dstVertices, 0, 0x0000ffff);
 	}
 
 	@Override
@@ -84,6 +76,34 @@ public class MeshTool extends RenderablePointSelector implements
 	public void render(GL2 gl, float[] parent) {
 		float[] tot = new float[16];
 		Matrix.multiplyMM(tot, 0, parent, 0, warp.affine, 0);
-		super.render(gl, tot);
+		pointRenderer.render(gl, tot);
+	}
+
+	@Override
+	public void destroy(GL2 gl) {
+		pointRenderer.destroy(gl);
+	}
+
+	@Override
+	public void init(GL2 gl) {
+		pointRenderer.init(gl);
+	}
+
+	@Override
+	public void onPointSelectorEvent(PointSelectorEvent e) {
+		if (e.newState == PointState.SELECT) {
+			pointRenderer.color[e.point] = COLOR_SELECT;
+			pointRenderer.texIndex[e.point] = TEX_SELECT;
+			warp.dstVertices[e.point * 2 + 0] = e.mx;
+			warp.dstVertices[e.point * 2 + 1] = e.my;
+		}
+		if (e.newState == PointState.NONE) {
+			pointRenderer.color[e.point] = COLOR_NONE;
+			pointRenderer.texIndex[e.point] = TEX_NONE;
+		}
+		if (e.newState == PointState.HOVER) {
+			pointRenderer.color[e.point] = COLOR_HOVER;
+			pointRenderer.texIndex[e.point] = TEX_HOVER;
+		}
 	}
 }

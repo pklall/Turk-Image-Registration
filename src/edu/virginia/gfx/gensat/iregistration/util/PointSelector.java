@@ -1,10 +1,22 @@
 package edu.virginia.gfx.gensat.iregistration.util;
 
+import edu.virginia.gfx.gensat.iregistration.util.PointSelectorEvent.PointState;
+
 public abstract class PointSelector implements GLMouseEventListener {
 	// pointer to buffer holding points
 	protected final float[] pointBuf;
 
 	private boolean moveOnSelect = false;
+
+	public static interface PointSelectorEventListener {
+		public void onPointSelectorEvent(PointSelectorEvent e);
+	}
+
+	private PointSelectorEventListener listener = null;
+
+	public void setEventListener(PointSelectorEventListener listener) {
+		this.listener = listener;
+	}
 
 	/**
 	 * Indicates whether to generate a move event when a point is selected
@@ -61,16 +73,20 @@ public abstract class PointSelector implements GLMouseEventListener {
 		mx = xyzw[0];
 		my = xyzw[1];
 
-		pointSelected(selectedPoint, mx, my);
+		listener.onPointSelectorEvent(new PointSelectorEvent(selectedPoint, mx,
+				my, PointState.HOVER, PointState.SELECT));
 
 		if (moveOnSelect) {
-			pointDragged(selectedPoint, mx, my);
+			listener.onPointSelectorEvent(new PointSelectorEvent(selectedPoint,
+					mx, my, PointState.SELECT, PointState.SELECT));
 		}
 	}
 
 	@Override
 	public void mouseUp(float mx, float my, int buttons, float[] mat) {
 		moving = false;
+		listener.onPointSelectorEvent(new PointSelectorEvent(selectedPoint, mx,
+				my, PointState.SELECT, PointState.HOVER));
 	}
 
 	@Override
@@ -105,47 +121,17 @@ public abstract class PointSelector implements GLMouseEventListener {
 				}
 			}
 			if (selectedPoint != closestPointIndex) {
+				listener.onPointSelectorEvent(new PointSelectorEvent(
+						selectedPoint, mx, my, PointState.HOVER,
+						PointState.NONE));
 				selectedPoint = closestPointIndex;
-				pointHovered(selectedPoint, mx, my);
+				listener.onPointSelectorEvent(new PointSelectorEvent(
+						selectedPoint, mx, my, PointState.NONE,
+						PointState.HOVER));
 			}
 		} else {
-			pointDragged(selectedPoint, mx, my);
+			listener.onPointSelectorEvent(new PointSelectorEvent(selectedPoint,
+					mx, my, PointState.SELECT, PointState.SELECT));
 		}
 	}
-
-	/**
-	 * Called when a new point is selected (the mouse is pushed down)
-	 * 
-	 * @param p
-	 *            The index of the selected point
-	 * @param x
-	 *            Mouse x coordinate in point space (transformed by inverse mat)
-	 * @param y
-	 *            Mosue y coordinate in point space (transformed by inverse mat)
-	 */
-	protected abstract void pointSelected(int p, float x, float y);
-
-	/**
-	 * Called when a point is dragged (the mouse is moved while down)
-	 * 
-	 * @param p
-	 *            The index of the selected point
-	 * @param x
-	 *            Mouse x coordinate in point space (transformed by inverse mat)
-	 * @param y
-	 *            Mouse y coordinate in point space (transformed by inverse mat)
-	 */
-	protected abstract void pointDragged(int p, float x, float y);
-
-	/**
-	 * Called when a point is selected (the mouse is moved while up)
-	 * 
-	 * @param p
-	 *            The index of the selected point
-	 * @param x
-	 *            Mouse x coordinate in point space (transformed by inverse mat)
-	 * @param y
-	 *            Mouse y coordinate in point space (transformed by inverse mat)
-	 */
-	protected abstract void pointHovered(int p, float x, float y);
 }

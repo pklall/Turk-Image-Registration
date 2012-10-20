@@ -10,74 +10,101 @@ import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 
 import edu.virginia.gfx.gensat.iregistration.util.InteractiveRenderable;
+import edu.virginia.gfx.gensat.iregistration.util.Matrix;
 import edu.virginia.gfx.gensat.iregistration.util.PointRenderer;
+import edu.virginia.gfx.gensat.iregistration.util.PointSelector;
+import edu.virginia.gfx.gensat.iregistration.util.PointSelectorEvent;
+import edu.virginia.gfx.gensat.iregistration.util.PointSelector.PointSelectorEventListener;
+import edu.virginia.gfx.gensat.iregistration.util.PointSelectorEvent.PointState;
 
-public class AffineTool implements InteractiveRenderable {
+public class AffineTool extends PointSelector implements InteractiveRenderable,
+		PointSelectorEventListener {
 	private final Warp warp;
 
-	// padding to use when displaying the corners of the inner rectangle
-	// this should be large enough to ensure selector points aren't clipped
-	// outside the viewport under typical conditions (there's no simple way
-	// to handle clipping under extreme translations)
-	private static final float PADDING = 0.30f;
+	private static final int TEX_NONE = 0;
+	private static final int TEX_HOVER = 1;
+	private static final int TEX_SELECT = 1;
 
-	// use the bottom left and top right corners for rotation handles
-	private final float[] rotatePoints = new float[] { 0, 0, 1, 1 };
-	// use the center for translation handles
-	private final float[] translatePoints = new float[] { 0.5f, 0.5f };
-	// use the center for translation handles
-	private final float[] scalePoints = new float[] { 0, 1, 1, 0 };
+	private static final int COLOR_NONE = 0xffffffff;
+	private static final int COLOR_HOVER = 0xffffffff;
+	private static final int COLOR_SELECT = 0xffffffff;
+
+	private final PointRenderer pointRenderer;
 
 	public AffineTool(Warp warp, GLProfile profile) throws IOException {
+		super(warp.dstVertices);
+		setEventListener(this);
+		setMoveOnSelect(false);
+
 		this.warp = warp;
-		
-		// load texture data
-		InputStream solidStream = getClass().getResourceAsStream(
-				"/circle_full.png");
+
+		InputStream solidStream = MeshTool.class
+				.getResourceAsStream("/circle_full.png");
 		TextureData solid = AWTTextureIO.newTextureData(profile, solidStream,
-				false, "png");
+				true, "png");
 
-		InputStream hollowStream = getClass().getResourceAsStream(
-				"/circle_hollow.png");
+		InputStream hollowStream = MeshTool.class
+				.getResourceAsStream("/circle_hollow.png");
 		TextureData hollow = AWTTextureIO.newTextureData(profile, hollowStream,
-				false, "png");
-
-		// initialize renderers
-		// toolPointRenderer = new PointRenderer(solid, );
+				true, "png");
+		this.pointRenderer = new PointRenderer(new TextureData[] { hollow,
+				solid }, warp.dstVertices);
 	}
 
 	@Override
-	public void init(GL2 gl) {
+	public void mouseDown(float mx, float my, int buttons, float[] mat) {
+		float[] tot = new float[16];
+		Matrix.multiplyMM(tot, 0, mat, 0, warp.affine, 0);
+		super.mouseDown(mx, my, buttons, tot);
+	}
 
+	@Override
+	public void mouseUp(float mx, float my, int buttons, float[] mat) {
+		float[] tot = new float[16];
+		Matrix.multiplyMM(tot, 0, mat, 0, warp.affine, 0);
+		super.mouseUp(mx, my, buttons, tot);
+	}
+
+	@Override
+	public void mouseMove(float mx, float my, float[] mat) {
+		float[] tot = new float[16];
+		Matrix.multiplyMM(tot, 0, mat, 0, warp.affine, 0);
+		super.mouseMove(mx, my, tot);
 	}
 
 	@Override
 	public void render(GL2 gl, float[] parent) {
-		// TODO Auto-generated method stub
-
+		float[] tot = new float[16];
+		Matrix.multiplyMM(tot, 0, parent, 0, warp.affine, 0);
+		pointRenderer.render(gl, tot);
 	}
 
 	@Override
 	public void destroy(GL2 gl) {
-
+		pointRenderer.destroy(gl);
 	}
 
 	@Override
-	public void mouseDown(float x, float y, int button, float[] mat) {
-		// TODO Auto-generated method stub
-
+	public void init(GL2 gl) {
+		pointRenderer.init(gl);
 	}
 
 	@Override
-	public void mouseUp(float x, float y, int button, float[] mat) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseMove(float x, float y, float[] mat) {
-		// TODO Auto-generated method stub
-
+	public void onPointSelectorEvent(PointSelectorEvent e) {
+		if (e.newState == PointState.SELECT) {
+			pointRenderer.color[e.point] = COLOR_SELECT;
+			pointRenderer.texIndex[e.point] = TEX_SELECT;
+			warp.dstVertices[e.point * 2 + 0] = e.mx;
+			warp.dstVertices[e.point * 2 + 1] = e.my;
+		}
+		if (e.newState == PointState.NONE) {
+			pointRenderer.color[e.point] = COLOR_NONE;
+			pointRenderer.texIndex[e.point] = TEX_NONE;
+		}
+		if (e.newState == PointState.HOVER) {
+			pointRenderer.color[e.point] = COLOR_HOVER;
+			pointRenderer.texIndex[e.point] = TEX_HOVER;
+		}
 	}
 
 }

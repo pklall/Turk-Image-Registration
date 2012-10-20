@@ -62,7 +62,7 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 				true);
 		this.targetImg = AWTTextureIO.newTextureData(getGLProfile(), targetImg,
 				true);
-		meshTool = MeshTool.create(warp, getGLProfile());
+		meshTool = new MeshTool(warp, getGLProfile());
 		affineTool = new AffineTool(warp, getGLProfile());
 		warpRenderer = new WarpRenderer(this.warpImg, warp);
 		setAlpha(128);
