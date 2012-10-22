@@ -68,7 +68,7 @@ public class PointRenderer implements Renderable {
 			float[] translation = new float[4];
 			translation[0] = xy[i * 2 + 0];
 			translation[1] = xy[i * 2 + 1];
-			translation[2] = 1;
+			translation[2] = 0;
 			translation[3] = 1;
 			Matrix.multiplyMV(translation, 0, parent, 0, translation, 0);
 
