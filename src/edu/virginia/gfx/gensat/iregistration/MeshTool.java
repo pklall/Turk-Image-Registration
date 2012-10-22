@@ -55,28 +55,28 @@ public class MeshTool extends PointSelector implements InteractiveRenderable,
 	@Override
 	public void mouseDown(float mx, float my, int buttons, float[] mat) {
 		float[] tot = new float[16];
-		Matrix.multiplyMM(tot, 0, mat, 0, warp.affine, 0);
+		Matrix.multiplyMM(tot, 0, mat, 0, warp.getAffine(), 0);
 		super.mouseDown(mx, my, buttons, tot);
 	}
 
 	@Override
 	public void mouseUp(float mx, float my, int buttons, float[] mat) {
 		float[] tot = new float[16];
-		Matrix.multiplyMM(tot, 0, mat, 0, warp.affine, 0);
+		Matrix.multiplyMM(tot, 0, mat, 0, warp.getAffine(), 0);
 		super.mouseUp(mx, my, buttons, tot);
 	}
 
 	@Override
 	public void mouseMove(float mx, float my, float[] mat) {
 		float[] tot = new float[16];
-		Matrix.multiplyMM(tot, 0, mat, 0, warp.affine, 0);
+		Matrix.multiplyMM(tot, 0, mat, 0, warp.getAffine(), 0);
 		super.mouseMove(mx, my, tot);
 	}
 
 	@Override
 	public void render(GL2 gl, float[] parent) {
 		float[] tot = new float[16];
-		Matrix.multiplyMM(tot, 0, parent, 0, warp.affine, 0);
+		Matrix.multiplyMM(tot, 0, parent, 0, warp.getAffine(), 0);
 		pointRenderer.render(gl, tot);
 	}
 

@@ -26,7 +26,7 @@ public class AffineTool extends PointSelector implements InteractiveRenderable,
 	private static final int SCALE = 2;
 
 	private static final int COLOR_NONE = 0x0000ffff;
-	private static final int COLOR_HOVER = 0x77ff77ff;
+	private static final int COLOR_HOVER = 0xff7700ff;
 	private static final int COLOR_SELECT = 0x00ff00ff;
 
 	private final PointRenderer pointRenderer;
@@ -59,7 +59,7 @@ public class AffineTool extends PointSelector implements InteractiveRenderable,
 		textures[TRANSLATE] = translate;
 		textures[ROTATE] = rotate;
 		textures[SCALE] = scale;
-		this.pointRenderer = new PointRenderer(textures, points);
+		this.pointRenderer = new PointRenderer(textures, points, 0, COLOR_NONE);
 		this.pointRenderer.texIndex[TRANSLATE] = TRANSLATE;
 		this.pointRenderer.texIndex[ROTATE] = ROTATE;
 		this.pointRenderer.texIndex[SCALE] = SCALE;
@@ -68,28 +68,28 @@ public class AffineTool extends PointSelector implements InteractiveRenderable,
 	@Override
 	public void mouseDown(float mx, float my, int buttons, float[] mat) {
 		float[] tot = new float[16];
-		Matrix.multiplyMM(tot, 0, mat, 0, warp.affine, 0);
+		Matrix.multiplyMM(tot, 0, mat, 0, warp.getAffine(), 0);
 		super.mouseDown(mx, my, buttons, tot);
 	}
 
 	@Override
 	public void mouseUp(float mx, float my, int buttons, float[] mat) {
 		float[] tot = new float[16];
-		Matrix.multiplyMM(tot, 0, mat, 0, warp.affine, 0);
+		Matrix.multiplyMM(tot, 0, mat, 0, warp.getAffine(), 0);
 		super.mouseUp(mx, my, buttons, tot);
 	}
 
 	@Override
 	public void mouseMove(float mx, float my, float[] mat) {
 		float[] tot = new float[16];
-		Matrix.multiplyMM(tot, 0, mat, 0, warp.affine, 0);
+		Matrix.multiplyMM(tot, 0, mat, 0, warp.getAffine(), 0);
 		super.mouseMove(mx, my, tot);
 	}
 
 	@Override
 	public void render(GL2 gl, float[] parent) {
 		float[] tot = new float[16];
-		Matrix.multiplyMM(tot, 0, parent, 0, warp.affine, 0);
+		Matrix.multiplyMM(tot, 0, parent, 0, warp.getAffine(), 0);
 		pointRenderer.render(gl, tot);
 	}
 
@@ -107,17 +107,27 @@ public class AffineTool extends PointSelector implements InteractiveRenderable,
 	public void onPointSelectorEvent(PointSelectorEvent e) {
 		// if a point was just clicked
 		if (e.newState == PointState.SELECT && e.oldState != PointState.SELECT) {
+			pointRenderer.color[e.point] = COLOR_SELECT;
 		}
 		// if a point is being dragged
 		if (e.newState == PointState.SELECT && e.oldState == PointState.SELECT) {
 			pointRenderer.color[e.point] = COLOR_SELECT;
+			float dx = e.mx - e.pmx;
+			float dy = e.my - e.pmy;
 			switch (e.point) {
 			case TRANSLATE:
-				float dx = e.mx - e.pmx;
-				float dy = e.my - e.pmy;
-				Matrix.translateM(warp.affine, 0, dx, dy, 0);
+				warp.translationX += dx;
+				warp.translationY += dy;
 				break;
 			case ROTATE:
+				// center of rotation
+				float rcx = 0.5f;
+				float rcy = 0.5f;
+				// compute previous and current angles of rotation about (rcx,
+				// rcy)
+				float angleP = (float) (Math.atan2(e.pmy - rcy, e.pmx - rcx) * 180.0f / Math.PI);
+				float angleC = (float) (Math.atan2(e.my - rcy, e.mx - rcx) * 180.0f / Math.PI);
+				warp.rotation += angleC - angleP;
 				break;
 			case SCALE:
 				break;
@@ -130,5 +140,4 @@ public class AffineTool extends PointSelector implements InteractiveRenderable,
 			pointRenderer.color[e.point] = COLOR_HOVER;
 		}
 	}
-
 }

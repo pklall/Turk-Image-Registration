@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.media.opengl.GL2;
@@ -28,6 +29,18 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 
 	private final TextureData warpImg;
 	private final TextureData targetImg;
+
+	public void submit() {
+		try {
+			// FIXME don't write warp to file on desktop
+			FileOutputStream fos = new FileOutputStream(
+					"/home/puneet/Desktop/test.warp.xml");
+			warp.writeWarp(fos);
+			fos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void setAlpha(int t) {
 		warpRenderer.setAlpha(t);
@@ -117,17 +130,18 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 		meshTool.init(gl);
 		affineTool.init(gl);
 	}
-	
+
 	@Override
 	public void setSize(int width, int height) {
 		super.setSize(width, height);
-		
+
 	}
 
 	@Override
 	public void reshape(GLAutoDrawable d, int x, int y, int width, int height) {
-		System.out.println(String.format("reshape(%d, %d, %d, %d)", x, y, width, height));
-		
+		System.out.println(String.format("reshape(%d, %d, %d, %d)", x, y,
+				width, height));
+
 		d.getGL().glViewport(x, y, width, height);
 
 		Matrix.setIdentityM(mat, 0);

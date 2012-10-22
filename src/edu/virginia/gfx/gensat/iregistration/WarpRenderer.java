@@ -29,7 +29,7 @@ public class WarpRenderer implements Renderable {
 	@Override
 	public void render(GL2 gl, float[] parent) {
 		float[] total = new float[16];
-		Matrix.multiplyMM(total, 0, parent, 0, warp.affine, 0);
+		Matrix.multiplyMM(total, 0, parent, 0, warp.getAffine(), 0);
 		shader.use(gl, warp.dstVertices, warp.srcVertices, warp.triangles,
 				total, warpTex, color);
 	}
