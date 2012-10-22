@@ -39,7 +39,9 @@ public class PointRenderer implements Renderable {
 	public PointRenderer(TextureData[] img, float[] xy) {
 		this(img, xy, 0, 0xffffffff);
 	}
-	public PointRenderer(TextureData[] img, float[] xy, int defaultImgIndex, int defaultColor) {
+
+	public PointRenderer(TextureData[] img, float[] xy, int defaultImgIndex,
+			int defaultColor) {
 		this.img = img;
 		this.xy = xy;
 		this.texIndex = new int[xy.length / 2];
@@ -52,11 +54,31 @@ public class PointRenderer implements Renderable {
 	public void render(GL2 gl, float[] parent) {
 		gl.glBlendEquation(GL2.GL_ADD);
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+
 		float[] mat = new float[16];
-		for (int i = 0; i < xy.length / 2; i ++) {
-			Matrix.translateM(mat, 0, parent, 0, xy[i*2 + 0], xy[i *2 + 1], 0);
-			Matrix.scaleM(mat, 0, radius, radius, 1);
-			shader.use(gl, sqVert, sqTex, triangles, mat, tex[texIndex[i]], color[i]);
+		Matrix.setIdentityM(mat, 0);
+		Matrix.scaleM(mat, 0, radius, radius, 0);
+		for (int i = 0; i < xy.length / 2; i++) {
+			// TODO this would ideally be done in a vertex shader
+
+			// Transform the origin by the parent matrix to know where to
+			// translate the point. This lets us ignore all other components
+			// of the transformation and render points with constant radius and
+			// rotation.
+			float[] translation = new float[4];
+			translation[0] = xy[i * 2 + 0];
+			translation[1] = xy[i * 2 + 1];
+			translation[2] = 1;
+			translation[3] = 1;
+			Matrix.multiplyMV(translation, 0, parent, 0, translation, 0);
+
+			// set the x and y translational components of the matrix to what
+			// we computed is the translational component of all top matrices
+			// when acting on the center of the point we're rendering
+			mat[12] = translation[0];
+			mat[13] = translation[1];
+			shader.use(gl, sqVert, sqTex, triangles, mat, tex[texIndex[i]],
+					color[i]);
 		}
 	}
 
