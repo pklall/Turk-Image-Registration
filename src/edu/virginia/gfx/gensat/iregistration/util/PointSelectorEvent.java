@@ -7,15 +7,25 @@ public class PointSelectorEvent {
 
 	public final int point;
 
+	/**
+	 * Previous mouse (x, y) coordinates
+	 */
+	public final float pmx, pmy;
+
+	/**
+	 * Current mouse (x, y) coordinates
+	 */
 	public final float mx, my;
 
 	public final PointState oldState;
 	public final PointState newState;
 
-	public PointSelectorEvent(int point, float mx, float my,
-			PointState oldState, PointState newState) {
+	public PointSelectorEvent(int point, float pmx, float pmy, float mx,
+			float my, PointState oldState, PointState newState) {
 		super();
 		this.point = point;
+		this.pmx = pmx;
+		this.pmy = pmy;
 		this.mx = mx;
 		this.my = my;
 		this.oldState = oldState;

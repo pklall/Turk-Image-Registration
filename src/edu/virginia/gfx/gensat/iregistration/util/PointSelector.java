@@ -56,53 +56,89 @@ public abstract class PointSelector implements GLMouseEventListener {
 		this.pointBuf = pointBuf;
 	}
 
+	private final float[] previousMouse = new float[4];
+	private final float[] currentMouse = new float[4];
+
 	@Override
 	public void mouseDown(float mx, float my, int buttons, float[] mat) {
 		moving = true;
 
 		// transform mouse coordinates from screen space to source-warp space
 		// total matrix
-		float[] xyzw = new float[4];
-		xyzw[0] = mx;
-		xyzw[1] = my;
-		xyzw[2] = 1;
-		xyzw[3] = 1;
+		currentMouse[0] = mx;
+		currentMouse[1] = my;
+		currentMouse[2] = 0;
+		currentMouse[3] = 1;
+
 		float[] invMat = new float[16];
 		Matrix.invertM(invMat, 0, mat, 0);
-		Matrix.multiplyMV(xyzw, 0, invMat, 0, xyzw, 0);
-		mx = xyzw[0];
-		my = xyzw[1];
+		Matrix.multiplyMV(currentMouse, 0, invMat, 0, currentMouse, 0);
+		Matrix.multiplyMV(previousMouse, 0, invMat, 0, previousMouse, 0);
+		float cx = currentMouse[0];
+		float cy = currentMouse[1];
+		float px = previousMouse[0];
+		float py = previousMouse[1];
 
-		listener.onPointSelectorEvent(new PointSelectorEvent(selectedPoint, mx,
-				my, PointState.HOVER, PointState.SELECT));
+		listener.onPointSelectorEvent(new PointSelectorEvent(selectedPoint, px,
+				py, cx, cy, PointState.HOVER, PointState.SELECT));
 
 		if (moveOnSelect) {
 			listener.onPointSelectorEvent(new PointSelectorEvent(selectedPoint,
-					mx, my, PointState.SELECT, PointState.SELECT));
+					px, py, cx, cy, PointState.SELECT, PointState.SELECT));
 		}
+
+		previousMouse[0] = mx;
+		previousMouse[1] = my;
+		previousMouse[2] = 0;
+		previousMouse[3] = 1;
 	}
 
 	@Override
 	public void mouseUp(float mx, float my, int buttons, float[] mat) {
 		moving = false;
-		listener.onPointSelectorEvent(new PointSelectorEvent(selectedPoint, mx,
-				my, PointState.SELECT, PointState.HOVER));
+
+		// transform mouse coordinates from screen space to source-warp space
+		// total matrix
+		currentMouse[0] = mx;
+		currentMouse[1] = my;
+		currentMouse[2] = 0;
+		currentMouse[3] = 1;
+
+		float[] invMat = new float[16];
+		Matrix.invertM(invMat, 0, mat, 0);
+		Matrix.multiplyMV(currentMouse, 0, invMat, 0, currentMouse, 0);
+		Matrix.multiplyMV(previousMouse, 0, invMat, 0, previousMouse, 0);
+		float cx = currentMouse[0];
+		float cy = currentMouse[1];
+		float px = previousMouse[0];
+		float py = previousMouse[1];
+
+		listener.onPointSelectorEvent(new PointSelectorEvent(selectedPoint, px,
+				py, cx, cy, PointState.SELECT, PointState.HOVER));
+
+		previousMouse[0] = mx;
+		previousMouse[1] = my;
+		previousMouse[2] = 0;
+		previousMouse[3] = 1;
 	}
 
 	@Override
 	public void mouseMove(float mx, float my, float[] mat) {
 		// transform mouse coordinates from screen space to source-warp space
 		// total matrix
-		float[] xyzw = new float[4];
-		xyzw[0] = mx;
-		xyzw[1] = my;
-		xyzw[2] = 1;
-		xyzw[3] = 1;
+		currentMouse[0] = mx;
+		currentMouse[1] = my;
+		currentMouse[2] = 0;
+		currentMouse[3] = 1;
+
 		float[] invMat = new float[16];
 		Matrix.invertM(invMat, 0, mat, 0);
-		Matrix.multiplyMV(xyzw, 0, invMat, 0, xyzw, 0);
-		mx = xyzw[0];
-		my = xyzw[1];
+		Matrix.multiplyMV(currentMouse, 0, invMat, 0, currentMouse, 0);
+		Matrix.multiplyMV(previousMouse, 0, invMat, 0, previousMouse, 0);
+		float cx = currentMouse[0];
+		float cy = currentMouse[1];
+		float px = previousMouse[0];
+		float py = previousMouse[1];
 
 		if (!moving) {
 			// find the closest point to the mouse cursor
@@ -112,8 +148,8 @@ public abstract class PointSelector implements GLMouseEventListener {
 				float x = pointBuf[i * 2];
 				float y = pointBuf[i * 2 + 1];
 				// compute distance in screen space
-				float dx = mx - x;
-				float dy = my - y;
+				float dx = cx - x;
+				float dy = cy - y;
 				float dist = dx * dx + dy * dy;
 				if (dist < closestDistance) {
 					closestDistance = dist;
@@ -122,16 +158,21 @@ public abstract class PointSelector implements GLMouseEventListener {
 			}
 			if (selectedPoint != closestPointIndex) {
 				listener.onPointSelectorEvent(new PointSelectorEvent(
-						selectedPoint, mx, my, PointState.HOVER,
+						selectedPoint, px, py, cx, cy, PointState.HOVER,
 						PointState.NONE));
 				selectedPoint = closestPointIndex;
 				listener.onPointSelectorEvent(new PointSelectorEvent(
-						selectedPoint, mx, my, PointState.NONE,
+						selectedPoint, px, py, cx, cy, PointState.NONE,
 						PointState.HOVER));
 			}
 		} else {
 			listener.onPointSelectorEvent(new PointSelectorEvent(selectedPoint,
-					mx, my, PointState.SELECT, PointState.SELECT));
+					px, py, cx, cy, PointState.SELECT, PointState.SELECT));
 		}
+
+		previousMouse[0] = mx;
+		previousMouse[1] = my;
+		previousMouse[2] = 0;
+		previousMouse[3] = 1;
 	}
 }
