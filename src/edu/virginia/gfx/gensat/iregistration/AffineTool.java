@@ -21,34 +21,48 @@ public class AffineTool extends PointSelector implements InteractiveRenderable,
 		PointSelectorEventListener {
 	private final Warp warp;
 
-	private static final int TEX_NONE = 0;
-	private static final int TEX_HOVER = 1;
-	private static final int TEX_SELECT = 1;
+	private static final int TRANSLATE = 0;
+	private static final int ROTATE = 1;
+	private static final int SCALE = 2;
 
-	private static final int COLOR_NONE = 0xffffffff;
-	private static final int COLOR_HOVER = 0xffffffff;
-	private static final int COLOR_SELECT = 0xffffffff;
+	private static final int COLOR_NONE = 0x0000ffff;
+	private static final int COLOR_HOVER = 0x77ff77ff;
+	private static final int COLOR_SELECT = 0x00ff00ff;
 
 	private final PointRenderer pointRenderer;
 
+	private static final float[] points = new float[] { 0.5f, 0.5f, 0.75f,
+			0.75f, 0.75f, 0.25f };
+
 	public AffineTool(Warp warp, GLProfile profile) throws IOException {
-		super(warp.dstVertices);
+		super(points);
 		setEventListener(this);
 		setMoveOnSelect(false);
 
 		this.warp = warp;
 
-		InputStream solidStream = MeshTool.class
-				.getResourceAsStream("/circle_full.png");
-		TextureData solid = AWTTextureIO.newTextureData(profile, solidStream,
+		InputStream rotateStream = getClass()
+				.getResourceAsStream("/rotate.png");
+		TextureData rotate = AWTTextureIO.newTextureData(profile, rotateStream,
 				true, "png");
 
-		InputStream hollowStream = MeshTool.class
-				.getResourceAsStream("/circle_hollow.png");
-		TextureData hollow = AWTTextureIO.newTextureData(profile, hollowStream,
+		InputStream translateStream = getClass().getResourceAsStream(
+				"/translate.png");
+		TextureData translate = AWTTextureIO.newTextureData(profile,
+				translateStream, true, "png");
+
+		InputStream scaleStream = getClass().getResourceAsStream("/scale.png");
+		TextureData scale = AWTTextureIO.newTextureData(profile, scaleStream,
 				true, "png");
-		this.pointRenderer = new PointRenderer(new TextureData[] { hollow,
-				solid }, warp.dstVertices);
+
+		TextureData[] textures = new TextureData[3];
+		textures[TRANSLATE] = translate;
+		textures[ROTATE] = rotate;
+		textures[SCALE] = scale;
+		this.pointRenderer = new PointRenderer(textures, points);
+		this.pointRenderer.texIndex[TRANSLATE] = TRANSLATE;
+		this.pointRenderer.texIndex[ROTATE] = ROTATE;
+		this.pointRenderer.texIndex[SCALE] = SCALE;
 	}
 
 	@Override
@@ -91,19 +105,29 @@ public class AffineTool extends PointSelector implements InteractiveRenderable,
 
 	@Override
 	public void onPointSelectorEvent(PointSelectorEvent e) {
-		if (e.newState == PointState.SELECT) {
+		// if a point was just clicked
+		if (e.newState == PointState.SELECT && e.oldState != PointState.SELECT) {
+		}
+		// if a point is being dragged
+		if (e.newState == PointState.SELECT && e.oldState == PointState.SELECT) {
 			pointRenderer.color[e.point] = COLOR_SELECT;
-			pointRenderer.texIndex[e.point] = TEX_SELECT;
-			warp.dstVertices[e.point * 2 + 0] = e.mx;
-			warp.dstVertices[e.point * 2 + 1] = e.my;
+			switch (e.point) {
+			case TRANSLATE:
+				float dx = e.mx - e.pmx;
+				float dy = e.my - e.pmy;
+				Matrix.translateM(warp.affine, 0, dx, dy, 0);
+				break;
+			case ROTATE:
+				break;
+			case SCALE:
+				break;
+			}
 		}
 		if (e.newState == PointState.NONE) {
 			pointRenderer.color[e.point] = COLOR_NONE;
-			pointRenderer.texIndex[e.point] = TEX_NONE;
 		}
 		if (e.newState == PointState.HOVER) {
 			pointRenderer.color[e.point] = COLOR_HOVER;
-			pointRenderer.texIndex[e.point] = TEX_HOVER;
 		}
 	}
 
