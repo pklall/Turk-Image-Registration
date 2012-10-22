@@ -3,8 +3,10 @@ package edu.virginia.gfx.gensat.iregistration;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,6 +16,7 @@ import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JApplet;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -23,20 +26,11 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import edu.virginia.gfx.gensat.iregistration.util.Matrix;
-
 public class Main extends JApplet {
 	private static final long serialVersionUID = 1L;
 	private Editor editor;
 
 	protected void initEditor() {
-		float[] affine = new float[16];
-		Matrix.setIdentityM(affine, 0);
-		// FIXME delete this
-		Matrix.scaleM(affine, 0, 1.25f, 0.50f, 1);
-		Matrix.translateM(affine, 0, 0.25f, 0.25f, 0);
-		Matrix.rotateM(affine, 0, 45, 0, 0, 1);
-		
 		// float[] points = new float[] { 0, 0, 0, 1, 1, 1, 1, 0 };
 		// int[] triangles = new int[] { 0, 1, 2, 0, 2, 3 };
 
@@ -74,7 +68,9 @@ public class Main extends JApplet {
 			}
 		}
 
-		Warp warp = new Warp(affine, points, triangles);
+		// Warp warp = new Warp(points, triangles);
+		Warp warp = Warp.readWarp(new BufferedInputStream(getClass()
+				.getResourceAsStream("/ws7.xml")));
 
 		BufferedImage imgWarp = null;
 		BufferedImage imgTarget = null;
@@ -85,12 +81,14 @@ public class Main extends JApplet {
 			// bean
 			// imgWarp = ImageIO .read(new URL(
 			// "http://cdn6.fotosearch.com/bthumb/FDS/FDS106/redkid4.jpg"));
-			imgTarget = ImageIO
-					.read(getClass().getResourceAsStream("/brain.jpg"));
+			imgTarget = ImageIO.read(getClass().getResourceAsStream(
+					"/brain.jpg"));
 			// imgTarget = ImageIO .read(new URL(
 			// "http://www.vnvlvokc.com/ow_userfiles/plugins/shoppro/images/product_1.jpg"));
-			imgWarp= ImageIO.read(new URL( "http://www.gensat.org/atlas/ADULT_ATLAS_07.jpg"));
-			// imgTarget = ImageIO .read(getClass().getResourceAsStream("/brain2.jpg"));
+			imgWarp = ImageIO.read(new URL(
+					"http://www.gensat.org/atlas/ADULT_ATLAS_07.jpg"));
+			// imgTarget = ImageIO
+			// .read(getClass().getResourceAsStream("/brain2.jpg"));
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -109,7 +107,7 @@ public class Main extends JApplet {
 	public void init() {
 		System.out.println("initializing... ");
 		getContentPane().setLayout(new BorderLayout(0, 0));
-		
+
 		initEditor();
 
 		final JSlider alphaSlider = new JSlider();
@@ -122,22 +120,23 @@ public class Main extends JApplet {
 				editor.setAlpha(alphaSlider.getValue());
 			}
 		});
-		
+
 		// FIXME These are terrible UI labels
 		final JRadioButton editWarpRadioButton = new JRadioButton("Edit Warp");
 		editWarpRadioButton.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				if(editWarpRadioButton.isSelected()) {
+				if (editWarpRadioButton.isSelected()) {
 					editor.setEditorModeWarp();
 				}
 			}
 		});
-		final JRadioButton editAffineRadioButton = new JRadioButton("Edit Affine");
+		final JRadioButton editAffineRadioButton = new JRadioButton(
+				"Edit Affine");
 		editAffineRadioButton.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				if(editAffineRadioButton.isSelected()) {
+				if (editAffineRadioButton.isSelected()) {
 					editor.setEditorModeAffine();
 				}
 			}
@@ -149,20 +148,30 @@ public class Main extends JApplet {
 		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.LINE_AXIS));
 		topPanel.add(editAffineRadioButton);
 		topPanel.add(editWarpRadioButton);
-		
+
 		// start with the affine button selected
 		editAffineRadioButton.setSelected(true);
 		editor.setEditorModeAffine();
 		editWarpRadioButton.setSelected(false);
-		
+
+		final JButton submitButton = new JButton("Submit");
+		submitButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				editor.submit();
+			}
+		});
+
 		JSeparator sep = new JSeparator(SwingConstants.VERTICAL);
 		sep.setMinimumSize(new Dimension(20, 0));
 		// FIXME separator causes strange layout behavior
 		// topPanel.add(sep);
 		topPanel.add(new JLabel("Transparency: "));
 		topPanel.add(alphaSlider);
-		
-		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+		topPanel.add(submitButton);
+
+		getContentPane().setLayout(
+				new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		getContentPane().add(topPanel);
 		getContentPane().add(editor);
 	}
