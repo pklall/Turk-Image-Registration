@@ -22,8 +22,8 @@ public class MeshTool extends PointSelector implements InteractiveRenderable,
 	private final Warp warp;
 
 	private static final int TEX_NONE = 0;
-	private static final int TEX_HOVER = 1;
-	private static final int TEX_SELECT = 1;
+	private static final int TEX_HOVER = 0;
+	private static final int TEX_SELECT = 0;
 
 	private static final int COLOR_NONE = 0x0000ffff; // blue
 	private static final int COLOR_HOVER = 0xff7700ff; // orange
@@ -39,16 +39,12 @@ public class MeshTool extends PointSelector implements InteractiveRenderable,
 		this.warp = warp;
 
 		InputStream solidStream = MeshTool.class
-				.getResourceAsStream("/circle_full.png");
+				.getResourceAsStream("/circle.png");
 		TextureData solid = AWTTextureIO.newTextureData(profile, solidStream,
 				true, "png");
 
-		InputStream hollowStream = MeshTool.class
-				.getResourceAsStream("/circle_hollow.png");
-		TextureData hollow = AWTTextureIO.newTextureData(profile, hollowStream,
-				true, "png");
-		this.pointRenderer = new PointRenderer(new TextureData[] { hollow,
-				solid }, warp.dstVertices, 0, 0x0000ffff);
+		this.pointRenderer = new PointRenderer(new TextureData[] { solid },
+				warp.dstVertices, 0, 0x0000ffff);
 	}
 
 	@Override
