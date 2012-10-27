@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
@@ -85,8 +84,8 @@ public class Main extends JApplet {
 					"/brain.jpg"));
 			// imgTarget = ImageIO .read(new URL(
 			// "http://www.vnvlvokc.com/ow_userfiles/plugins/shoppro/images/product_1.jpg"));
-			imgWarp = ImageIO.read(new URL(
-					"http://www.gensat.org/atlas/ADULT_ATLAS_07.jpg"));
+			// imgWarp = ImageIO.read(new URL( "http://www.gensat.org/atlas/ADULT_ATLAS_07.jpg"));
+			imgWarp = ImageIO.read(getClass().getResource("/ADULT_ATLAS_07.jpg"));
 			// imgTarget = ImageIO
 			// .read(getClass().getResourceAsStream("/brain2.jpg"));
 		} catch (MalformedURLException e) {
