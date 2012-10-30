@@ -20,7 +20,7 @@ public class Warp {
 	 * number of horizontal deformation field samples will be (width + 1).
 	 */
 	public final int width;
-	
+
 	/**
 	 * The vertical resolution of the deformation field. Note that the total
 	 * number of vertical deformation field samples will be (height + 1).
@@ -30,26 +30,76 @@ public class Warp {
 	/**
 	 * height x width array of warp (x, y) pairs
 	 * 
-	 * Given an image, I, parameterized over [0, 1]x[0, 1] the
-	 * resulting image, J, after warping is as follows:
+	 * Given an image, I, parameterized over [0, 1]x[0, 1] the resulting image,
+	 * J, after warping is as follows:
 	 * 
-	 * u = warpX[y * height * width + x * width] / width
-	 * v = warpY[y * height * width + x * width] / height
-	 * J(x, y) = I(u, v)
+	 * u = warpX[y * height * width + x * width] / width v = warpY[y * height *
+	 * width + x * width] / height J(x, y) = I(u, v)
 	 * 
 	 */
 	public final short[] warpX;
 	public final short[] warpY;
-	
+
 	/**
-	 * @param x Between 0 and width - 1
-	 * @param y Between 0 and height - 1
-	 * @return The corresponding 
+	 * @param x
+	 *            Between 0 and width - 1
+	 * @param y
+	 *            Between 0 and height - 1
+	 * @return The corresponding
 	 */
 	public int getWarpImgIndex(int x, int y) {
 		return y * width + x;
 	}
-	
+
+	private float gauss(float t, float sigma) {
+		return (float) Math.exp(-(t * t) / (2 * sigma * sigma));
+	}
+
+	private void addGaussWarp(float cx, float cy, float sigma, float scale,
+			short[] data) {
+		// we'll consider the relevant domain to be [sx, sx + wx]x[sy, sy + wy]
+		float radx = sigma * 3 * width;
+		float rady = sigma * 3 * height;
+		float minx = cx * width - radx;
+		float miny = cy * height - rady;
+		float maxx = cx * width + radx;
+		float maxy = cy * height + rady;
+		minx = Math.max(minx, 0.0f);
+		miny = Math.max(miny, 0.0f);
+		maxx = Math.min(maxx, width);
+		maxy = Math.min(maxy, height);
+
+		for (float x = minx; x < maxx; x += 1.0f) {
+			for (float y = miny; y < maxy; y += 1.0f) {
+				// the (x, y) indices into the data matrix
+				int ix = (int) (x);
+				int iy = (int) (y);
+				// the location of the indices in the "warp space" [0, 1]x[0, 1]
+				float ixw = (float) (ix - cx * width) / (float) width;
+				float iyw = (float) (iy - cy * height) / (float) height;
+				// evaluate the gaussian function here
+				float gval = gauss((float) Math.sqrt(ixw * ixw + iyw * iyw),
+						sigma) * scale;
+				int index = getWarpImgIndex(ix, iy);
+				data[index] += gval;
+			}
+		}
+	}
+
+	/**
+	 * Adds the scaled radial Gaussian function centered at (cx, cy) with sd =
+	 * sigma to the warp.
+	 * 
+	 * @param cx
+	 * @param cy
+	 * @param sigma
+	 */
+	public void addGaussWarp(float cx, float cy, float sigma, float scaleX,
+			float scaleY) {
+		addGaussWarp(cx, cy, sigma, scaleX, warpX);
+		addGaussWarp(cx, cy, sigma, scaleY, warpY);
+	}
+
 	/**
 	 * Constructor
 	 * 

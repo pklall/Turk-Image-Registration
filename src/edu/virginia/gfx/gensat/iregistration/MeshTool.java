@@ -83,8 +83,9 @@ public class MeshTool implements InteractiveRenderable {
 			int y = (int) (warp.width * curMouse[1]);
 			float dx = curMouse[0] - prevMouse[0];
 			float dy = curMouse[1] - prevMouse[1];
-			warp.warpX[warp.getWarpImgIndex(x, y)] -= 65535 * dx / 2;
-			warp.warpY[warp.getWarpImgIndex(x, y)] -= 65535 * dy / 2;
+			// warp.warpX[warp.getWarpImgIndex(x, y)] -= 65535 * dx / 2;
+			// warp.warpY[warp.getWarpImgIndex(x, y)] -= 65535 * dy / 2;
+			warp.addGaussWarp(curMouse[0], curMouse[1], 0.15f, -65535 * dx / 2, -65535 * dy / 2);
 		}
 		float[] tmp = prevMouse;
 		prevMouse = curMouse;

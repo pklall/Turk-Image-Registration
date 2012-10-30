@@ -33,7 +33,7 @@ public class Main extends JApplet {
 		// float[] points = new float[] { 0, 0, 0, 1, 1, 1, 1, 0 };
 		// int[] triangles = new int[] { 0, 1, 2, 0, 2, 3 };
 
-		Warp warp = new Warp(10, 10);
+		Warp warp = new Warp(300, 300);
 
 		BufferedImage imgWarp = null;
 		BufferedImage imgTarget = null;
