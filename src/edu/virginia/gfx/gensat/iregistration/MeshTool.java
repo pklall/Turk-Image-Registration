@@ -47,34 +47,53 @@ public class MeshTool implements InteractiveRenderable {
 	}
 
 	private final float[] tmpMat = new float[16];
-	private final float[] tmpVec = new float[4];
 
-	private float[] mouseToMeshSpace(float mx, float my, float[] parentMat) {
-		Matrix.invertM(tmpMat, 0, parentMat, 0);
-		tmpVec[0] = mx;
-		tmpVec[1] = mx;
-		Matrix.multiplyMV(tmpVec, 0, tmpMat, 0, tmpVec, 0);
-		
-		return tmpVec;
+	private void mouseToMeshSpace(float mx, float my, float[] parentMat,
+			float[] result) {
+		synchronized (tmpMat) {
+			Matrix.invertM(tmpMat, 0, parentMat, 0);
+			result[0] = mx;
+			result[1] = my;
+			result[2] = 0;
+			result[3] = 1;
+			Matrix.multiplyMV(result, 0, tmpMat, 0, result, 0);
+		}
 	}
+
+	private boolean dragging = false;
+	private float[] prevMouse = new float[4];
+	private float[] curMouse = new float[4];
 
 	@Override
 	public void mouseDown(float mx, float my, int buttons, float[] mat) {
-		warp.warpX[warp.getWarpImgIndex(warp.width / 2, warp.height/2)] += 65535 / 1000;
-		warp.warpY[warp.getWarpImgIndex(warp.width / 2, warp.height/2)] += 65535 / 1000;
+		dragging = true;
 		System.out.println("mouse down");
 	}
 
 	@Override
 	public void mouseUp(float mx, float my, int buttons, float[] mat) {
+		dragging = false;
 	}
 
 	@Override
 	public void mouseMove(float mx, float my, float[] mat) {
+		mouseToMeshSpace(mx, my, mat, curMouse);
+		if (dragging) {
+			int x = (int) (warp.width * curMouse[0]);
+			int y = (int) (warp.width * curMouse[1]);
+			float dx = curMouse[0] - prevMouse[0];
+			float dy = curMouse[1] - prevMouse[1];
+			warp.warpX[warp.getWarpImgIndex(x, y)] -= 65535 * dx / 2;
+			warp.warpY[warp.getWarpImgIndex(x, y)] -= 65535 * dy / 2;
+		}
+		float[] tmp = prevMouse;
+		prevMouse = curMouse;
+		curMouse = tmp;
 	}
 
 	@Override
 	public void render(GL2 gl, float[] parent) {
+		// do nothing
 	}
 
 	@Override
