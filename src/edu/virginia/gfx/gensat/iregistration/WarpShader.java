@@ -28,7 +28,7 @@ public class WarpShader extends Shader {
 			"	gl_Position = uVertMatrix * vec4(aVert, 1.0, 1.0);",//
 			"	vTexCoord = vec3(aTexCoord, 1.0);",//
 			"}" };
-	
+
 	private static final String[] FRAGMENT = new String[] {
 			"uniform sampler2D uWarpX; ",//
 			"uniform sampler2D uWarpY; ",//
@@ -38,8 +38,8 @@ public class WarpShader extends Shader {
 			"uniform vec4 uColor; ",//
 			"void main() { ",//
 			"   vec3 delta; ",//
-			"   delta.x = texture2D(uWarpX, vTexCoord).r; ",//
-			"   delta.y = texture2D(uWarpY, vTexCoord).r; ",//
+			"   delta.x = (texture2D(uWarpX, vTexCoord).r - 0.5) * 2.0; ",//
+			"   delta.y = (texture2D(uWarpY, vTexCoord).r - 0.5) * 2.0; ",//
 			"   delta.z = 0.0; ",//
 			// "   gl_FragColor = vec4(uTexMatrix * delta, 1.0) * uColor; ",//
 			"   gl_FragColor = texture2D(uTex, uTexMatrix * (vTexCoord + delta)) * uColor; ",//
@@ -74,7 +74,7 @@ public class WarpShader extends Shader {
 
 	public void use(GL2 gl, float[] vertexMatrix, WarpGL warp,
 			Texture warpTexture, int color) {
-		if(gl.glGetError() != GL2.GL_NO_ERROR) {
+		if (gl.glGetError() != GL2.GL_NO_ERROR) {
 			System.err.println("Error at beginning of WarpShader");
 		}
 		gl.glUseProgram(program);
@@ -86,8 +86,10 @@ public class WarpShader extends Shader {
 		gl.glVertexAttribPointer(aTexCoordHandle, 2, GL2.GL_FLOAT, false, 0,
 				(Buffer) FloatBuffer.wrap(sqTex));
 		gl.glEnableVertexAttribArray(aTexCoordHandle);
-		
-		if(gl.glGetError() != GL2.GL_NO_ERROR) { System.err.println("Error at middle of WarpShader"); }
+
+		if (gl.glGetError() != GL2.GL_NO_ERROR) {
+			System.err.println("Error at middle of WarpShader");
+		}
 
 		gl.glActiveTexture(GL2.GL_TEXTURE0);
 		warp.bindX(gl);
@@ -95,8 +97,8 @@ public class WarpShader extends Shader {
 
 		gl.glActiveTexture(GL2.GL_TEXTURE1);
 		warp.bindY(gl);
-		gl.glUniform1i(uWarpYHandle, 1); 
-		
+		gl.glUniform1i(uWarpYHandle, 1);
+
 		gl.glActiveTexture(GL2.GL_TEXTURE2);
 		warpTexture.bind(gl);
 		gl.glUniform1i(uTexHandle, 2);
@@ -108,7 +110,7 @@ public class WarpShader extends Shader {
 		TextureCoords t = warpTexture.getImageTexCoords();
 		float[] texCoordMatrix = new float[] { t.right() - t.left(), 0,
 				t.left(), 0, t.top() - t.bottom(), t.bottom(), 0, 0, 1 };
-		
+
 		gl.glUniformMatrix3fv(uTexMatrixHandle, 1, true, texCoordMatrix, 0);
 
 		gl.glUniformMatrix4fv(uVertMatrixHandle, 1, false, vertexMatrix, 0);
@@ -121,7 +123,7 @@ public class WarpShader extends Shader {
 
 		gl.glDrawElements(GL2.GL_TRIANGLES, triangles.length,
 				GL2.GL_UNSIGNED_INT, (Buffer) IntBuffer.wrap(triangles));
-		if(gl.glGetError() != GL2.GL_NO_ERROR) {
+		if (gl.glGetError() != GL2.GL_NO_ERROR) {
 			System.err.println("Error at end of WarpShader");
 		}
 	}

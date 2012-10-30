@@ -44,7 +44,7 @@ public class WarpGL {
 	public void bindY(GL2 gl) {
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, y);
 		gl.glTexSubImage2D(GL2.GL_TEXTURE_2D, 0, 0, 0, warp.width, warp.height,
-				GL2.GL_RED, GL2.GL_UNSIGNED_SHORT, ShortBuffer.wrap(warp.warpY));
+				GL2.GL_RED, GL2.GL_SHORT, ShortBuffer.wrap(warp.warpY));
 	}
 
 	public WarpGL(Warp warp, GL2 gl) {

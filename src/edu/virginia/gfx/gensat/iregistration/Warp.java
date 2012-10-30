@@ -2,6 +2,7 @@ package edu.virginia.gfx.gensat.iregistration;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -63,5 +64,7 @@ public class Warp {
 		this.height = height;
 		warpX = new short[height * width];
 		warpY = new short[height * width];
+		Arrays.fill(warpX, (short) (Short.MAX_VALUE / 2));
+		Arrays.fill(warpY, (short) (Short.MAX_VALUE / 2));
 	}
 }
