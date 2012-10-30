@@ -33,43 +33,7 @@ public class Main extends JApplet {
 		// float[] points = new float[] { 0, 0, 0, 1, 1, 1, 1, 0 };
 		// int[] triangles = new int[] { 0, 1, 2, 0, 2, 3 };
 
-		// create a grid
-		int grid = 5; // 3x3
-		float[] points = new float[(grid + 1) * (grid + 1) * 2];
-		for (int x = 0; x <= grid; x++) {
-			for (int y = 0; y <= grid; y++) {
-				points[(y * (grid + 1) + x) * 2 + 0] = (float) x * 1.0f
-						/ (float) grid;
-				points[(y * (grid + 1) + x) * 2 + 1] = (float) y * 1.0f
-						/ (float) grid;
-			}
-		}
-		System.out.println("Points: " + Arrays.toString(points));
-		int[] triangles = new int[grid * grid * 3 * 2];
-		// top-left triangles
-		for (int y = 0; y < grid; y++) {
-			for (int x = 0; x < grid; x++) {
-				triangles[(y * grid + x) * 3 + 0] = y * (grid + 1) + x;
-				triangles[(y * grid + x) * 3 + 1] = y * (grid + 1) + (x + 1);
-				triangles[(y * grid + x) * 3 + 2] = (y + 1) * (grid + 1) + x;
-			}
-		}
-		// top-left triangles
-		int offset = grid * grid * 3;
-		for (int y = 0; y < grid; y++) {
-			for (int x = 0; x < grid; x++) {
-				triangles[(y * grid + x) * 3 + 0 + offset] = y * (grid + 1)
-						+ (x + 1);
-				triangles[(y * grid + x) * 3 + 1 + offset] = (y + 1)
-						* (grid + 1) + (x + 1);
-				triangles[(y * grid + x) * 3 + 2 + offset] = (y + 1)
-						* (grid + 1) + x;
-			}
-		}
-
-		// Warp warp = new Warp(points, triangles);
-		Warp warp = Warp.readWarp(new BufferedInputStream(getClass()
-				.getResourceAsStream("/ws7.xml")));
+		Warp warp = new Warp(10, 10);
 
 		BufferedImage imgWarp = null;
 		BufferedImage imgTarget = null;
@@ -84,8 +48,10 @@ public class Main extends JApplet {
 					"/brain.jpg"));
 			// imgTarget = ImageIO .read(new URL(
 			// "http://www.vnvlvokc.com/ow_userfiles/plugins/shoppro/images/product_1.jpg"));
-			// imgWarp = ImageIO.read(new URL( "http://www.gensat.org/atlas/ADULT_ATLAS_07.jpg"));
-			imgWarp = ImageIO.read(getClass().getResource("/ADULT_ATLAS_07.jpg"));
+			// imgWarp = ImageIO.read(new URL(
+			// "http://www.gensat.org/atlas/ADULT_ATLAS_07.jpg"));
+			imgWarp = ImageIO.read(getClass()
+					.getResource("/ADULT_ATLAS_07.jpg"));
 			// imgTarget = ImageIO
 			// .read(getClass().getResourceAsStream("/brain2.jpg"));
 		} catch (MalformedURLException e) {

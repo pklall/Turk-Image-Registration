@@ -17,25 +17,19 @@ import edu.virginia.gfx.gensat.iregistration.util.PointSelector.PointSelectorEve
 import edu.virginia.gfx.gensat.iregistration.util.PointSelectorEvent;
 import edu.virginia.gfx.gensat.iregistration.util.PointSelectorEvent.PointState;
 
-public class MeshTool extends PointSelector implements InteractiveRenderable,
-		PointSelectorEventListener {
+public class MeshTool implements InteractiveRenderable {
 	private final Warp warp;
-
-	private static final int TEX_NONE = 0;
-	private static final int TEX_HOVER = 1;
-	private static final int TEX_SELECT = 1;
-
-	private static final int COLOR_NONE = 0x0000ffff; // blue
-	private static final int COLOR_HOVER = 0xff7700ff; // orange
-	private static final int COLOR_SELECT = 0x00ff00ff; // green
 
 	private final PointRenderer pointRenderer;
 
-	public MeshTool(Warp warp, GLProfile profile) throws IOException {
-		super(warp.dstVertices);
-		setEventListener(this);
-		setMoveOnSelect(true);
+	private float radius = 0.05f;
+	private float radiusDelta = 0.01f;
+	private float minRadius = 0.01f;
+	private float maxRadius = 0.10f;
 
+	private final float[] mouse = new float[2];
+
+	public MeshTool(Warp warp, GLProfile profile) throws IOException {
 		this.warp = warp;
 
 		InputStream hollowStream = MeshTool.class
@@ -49,35 +43,38 @@ public class MeshTool extends PointSelector implements InteractiveRenderable,
 				true, "png");
 
 		this.pointRenderer = new PointRenderer(new TextureData[] { hollow,
-				solid }, warp.dstVertices, 0, 0x0000ffff);
+				solid }, mouse, 0, 0x0000ffff);
+	}
+
+	private final float[] tmpMat = new float[16];
+	private final float[] tmpVec = new float[4];
+
+	private float[] mouseToMeshSpace(float mx, float my, float[] parentMat) {
+		Matrix.invertM(tmpMat, 0, parentMat, 0);
+		tmpVec[0] = mx;
+		tmpVec[1] = mx;
+		Matrix.multiplyMV(tmpVec, 0, tmpMat, 0, tmpVec, 0);
+		
+		return tmpVec;
 	}
 
 	@Override
 	public void mouseDown(float mx, float my, int buttons, float[] mat) {
-		float[] tot = new float[16];
-		Matrix.multiplyMM(tot, 0, mat, 0, warp.getAffine(), 0);
-		super.mouseDown(mx, my, buttons, tot);
+		warp.warpX[warp.getWarpImgIndex(warp.width / 2, warp.height/2)] += 65535 / 1000;
+		warp.warpY[warp.getWarpImgIndex(warp.width / 2, warp.height/2)] += 65535 / 1000;
+		System.out.println("mouse down");
 	}
 
 	@Override
 	public void mouseUp(float mx, float my, int buttons, float[] mat) {
-		float[] tot = new float[16];
-		Matrix.multiplyMM(tot, 0, mat, 0, warp.getAffine(), 0);
-		super.mouseUp(mx, my, buttons, tot);
 	}
 
 	@Override
 	public void mouseMove(float mx, float my, float[] mat) {
-		float[] tot = new float[16];
-		Matrix.multiplyMM(tot, 0, mat, 0, warp.getAffine(), 0);
-		super.mouseMove(mx, my, tot);
 	}
 
 	@Override
 	public void render(GL2 gl, float[] parent) {
-		float[] tot = new float[16];
-		Matrix.multiplyMM(tot, 0, parent, 0, warp.getAffine(), 0);
-		pointRenderer.render(gl, tot);
 	}
 
 	@Override
@@ -88,23 +85,5 @@ public class MeshTool extends PointSelector implements InteractiveRenderable,
 	@Override
 	public void init(GL2 gl) {
 		pointRenderer.init(gl);
-	}
-
-	@Override
-	public void onPointSelectorEvent(PointSelectorEvent e) {
-		if (e.newState == PointState.SELECT) {
-			pointRenderer.color[e.point] = COLOR_SELECT;
-			pointRenderer.texIndex[e.point] = TEX_SELECT;
-			warp.dstVertices[e.point * 2 + 0] = e.mx;
-			warp.dstVertices[e.point * 2 + 1] = e.my;
-		}
-		if (e.newState == PointState.NONE) {
-			pointRenderer.color[e.point] = COLOR_NONE;
-			pointRenderer.texIndex[e.point] = TEX_NONE;
-		}
-		if (e.newState == PointState.HOVER) {
-			pointRenderer.color[e.point] = COLOR_HOVER;
-			pointRenderer.texIndex[e.point] = TEX_HOVER;
-		}
 	}
 }

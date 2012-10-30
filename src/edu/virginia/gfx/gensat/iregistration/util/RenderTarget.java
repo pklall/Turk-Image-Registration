@@ -28,8 +28,15 @@ public class RenderTarget {
 		gl.glDeleteTextures(1, new int[] { texture }, 0);
 		gl.glDeleteFramebuffers(1, new int[] { framebuffer }, 0);
 	}
+	
+	public void initL16(GL2 gl) {
+		init(gl, GL2.GL_LUMINANCE16, GL2.GL_LUMINANCE16);
+	}
+	public void initRGB(GL2 gl) {
+		init(gl, GL2.GL_RGB, GL2.GL_RGB);
+	}
 
-	public void init(GL2 gl) {
+	public void init(GL2 gl, int imgFormat, int imgType) {
 		int[] handleBuffer = new int[1];
 
 		gl.glGenFramebuffers(1, handleBuffer, 0);
@@ -42,12 +49,12 @@ public class RenderTarget {
 
 		System.out.println(String.format(
 				"Allocating a render buffer of size %d x %d", width, height));
-		gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, GL2.GL_RGB, width, height, 0,
-				GL2.GL_RGB, GL2.GL_UNSIGNED_BYTE, null);
+		gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, imgFormat, width, height, 0,
+				imgType, GL2.GL_UNSIGNED_BYTE, null);
 
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
 				GL2.GL_NEAREST);
-		// Use a min filter so we can use these for anti-aliasing
+		
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
 				GL2.GL_LINEAR);
 

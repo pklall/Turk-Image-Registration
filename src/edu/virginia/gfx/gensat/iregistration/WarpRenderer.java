@@ -10,13 +10,15 @@ import edu.virginia.gfx.gensat.iregistration.util.Mesh2DShader;
 import edu.virginia.gfx.gensat.iregistration.util.Renderable;
 
 public class WarpRenderer implements Renderable {
-	private final TextureData warpImg;
-	private final Warp warp;
+	private TextureData warpImg;
+	private Warp warp;
+	private WarpGL warpGL;
 
 	private Texture warpTex;
-	private Mesh2DShader shader;
-	
+	private WarpShader shader;
+
 	private int color = 0xffffffff;
+
 	public void setAlpha(int alpha) {
 		color = 0xffffff00 + (alpha & 0x000000ff);
 	}
@@ -28,10 +30,7 @@ public class WarpRenderer implements Renderable {
 
 	@Override
 	public void render(GL2 gl, float[] parent) {
-		float[] total = new float[16];
-		Matrix.multiplyMM(total, 0, parent, 0, warp.getAffine(), 0);
-		shader.use(gl, warp.dstVertices, warp.srcVertices, warp.triangles,
-				total, warpTex, color);
+		shader.use(gl, parent, warpGL, warpTex, color);
 	}
 
 	@Override
@@ -43,6 +42,7 @@ public class WarpRenderer implements Renderable {
 	@Override
 	public void init(GL2 gl) {
 		warpTex = new Texture(gl, warpImg);
-		shader = new Mesh2DShader(gl);
+		shader = new WarpShader(gl);
+		warpGL = new WarpGL(warp, gl);
 	}
 }

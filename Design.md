@@ -1,7 +1,7 @@
 Requirements
     3 parts
         Editor
-            Allows users to edit control points on the warp lattice
+            Allows users to edit warp function
                 Provides feedback in the form of an overlay of the warped image
                 with the target image
             Allows users to submit their work to the server
@@ -20,24 +20,11 @@ Requirements
 
 Specification
     Warp
-        Combination of affine transformation and translated control points.
-        All control points are in terms of image space [0, 1]x[0, 1] with
-        (0, 0) in the **bottom left corner**.
-        Warp = {Affine, ControlPoints}
-        Affine = {(dx1, dy1), (dx2, dy2)}
-            {(1, 0), (0, 1)} -> identify affine transform
-        ControlPoints = Src, Dst, Trianglulation
-        Src = {(x1, y1), (x2, y2), ...}
-        Dst = {(x1, y1), (x2, y2), ...}
-            Src == Dst -> identity control point warp
-        Triangulation = {(p1, p2, p3), ...}
-            Index buffer into Src and Dst
+    	Uniform grid of vectors, interpolated with radial basis functions
     Editor
         Inputs:
             Warp image
             Target image
-            Mesh
-                Dst and Triangulation (Src == Dst, and Affine = default)
         States:
             Edit Mode
                 Affine tool

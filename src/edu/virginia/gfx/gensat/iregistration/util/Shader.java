@@ -28,18 +28,26 @@ public abstract class Shader {
 	protected abstract void initShaderParams(GL2 gl);
 
 	private void init(GL2 gl) {
+		if(gl.glGetError() != GL2.GL_NO_ERROR) {
+			System.err.println("Error before creating shader!");
+		}
+		
 		IntBuffer retInt = GLBuffers.newDirectIntBuffer(1);
 		retInt.rewind();
+		System.out.print("Compiling vertex shader...");
 		ShaderUtil.createAndCompileShader(gl.getGL(), retInt,
 				GL2.GL_VERTEX_SHADER, new CharSequence[][] { vertex },
 				System.out);
 		vertexShader = retInt.get(0);
 		retInt.rewind();
+		System.out.println("done");
+		System.out.print("Compiling fragment shader...");
 		ShaderUtil.createAndCompileShader(gl.getGL(), retInt,
 				GL2.GL_FRAGMENT_SHADER, new CharSequence[][] { fragment },
 				System.out);
+		System.out.println("done");
 		fragmentShader = retInt.get(0);
-		
+
 		program = gl.glCreateProgram();
 		gl.glAttachShader(program, vertexShader);
 		gl.glAttachShader(program, fragmentShader);
@@ -50,8 +58,12 @@ public abstract class Shader {
 			gl.glDeleteProgram(program);
 		}
 		initShaderParams(gl);
+		
+		if(gl.glGetError() != GL2.GL_NO_ERROR) {
+			System.err.println("Error creating shader!");
+		}
 	}
-	
+
 	public final void destroy(GL2 gl) {
 		gl.glDeleteShader(vertexShader);
 		gl.glDeleteShader(fragmentShader);

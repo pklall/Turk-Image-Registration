@@ -31,15 +31,7 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 	private final TextureData targetImg;
 
 	public void submit() {
-		try {
-			// FIXME don't write warp to file on desktop
-			FileOutputStream fos = new FileOutputStream(
-					"/home/puneet/Desktop/test.warp.xml");
-			warp.writeWarp(fos);
-			fos.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		// TODO implement this!
 	}
 
 	public void setAlpha(int t) {
@@ -58,7 +50,6 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 	private SquareRenderer targetRenderer;
 
 	private MeshTool meshTool;
-	private AffineTool affineTool;
 
 	private InteractiveRenderable activeTool;
 
@@ -76,7 +67,6 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 		this.targetImg = AWTTextureIO.newTextureData(getGLProfile(), targetImg,
 				true);
 		meshTool = new MeshTool(warp, getGLProfile());
-		affineTool = new AffineTool(warp, getGLProfile());
 		warpRenderer = new WarpRenderer(this.warpImg, warp);
 		setAlpha(128);
 		targetRenderer = new SquareRenderer(this.targetImg);
@@ -85,7 +75,6 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 	}
 
 	public void setEditorModeAffine() {
-		activeTool = affineTool;
 		repaint();
 	}
 
@@ -105,10 +94,10 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 		gl.glDisable(GL2.GL_CULL_FACE);
 
 		gl.glEnable(GL2.GL_BLEND);
+		gl.glBlendEquation(GL2.GL_FUNC_ADD);
+		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
 
 		targetRenderer.render(gl, mat);
-		gl.glBlendEquation(GL2.GL_ADD);
-		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
 		warpRenderer.render(gl, mat);
 		activeTool.render(gl, mat);
 	}
@@ -119,16 +108,14 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 		targetRenderer.destroy(gl);
 		warpRenderer.destroy(gl);
 		meshTool.destroy(gl);
-		affineTool.destroy(gl);
 	}
 
 	@Override
 	public void init(GLAutoDrawable d) {
 		GL2 gl = d.getGL().getGL2();
-		warpRenderer.init(gl);
 		targetRenderer.init(gl);
+		warpRenderer.init(gl);
 		meshTool.init(gl);
-		affineTool.init(gl);
 	}
 
 	@Override
