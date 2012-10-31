@@ -52,7 +52,7 @@ public class PointRenderer implements Renderable {
 
 	@Override
 	public void render(GL2 gl, float[] parent) {
-		gl.glBlendEquation(GL2.GL_ADD);
+		gl.glBlendEquation(GL2.GL_FUNC_ADD);
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
 
 		float[] mat = new float[16];

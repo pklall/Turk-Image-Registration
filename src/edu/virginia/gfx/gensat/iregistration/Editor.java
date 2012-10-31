@@ -3,6 +3,8 @@ package edu.virginia.gfx.gensat.iregistration;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,7 +24,7 @@ import edu.virginia.gfx.gensat.iregistration.util.Matrix;
 import edu.virginia.gfx.gensat.iregistration.util.SquareRenderer;
 
 public class Editor extends GLJPanel implements GLEventListener, MouseListener,
-		MouseMotionListener {
+		MouseMotionListener, MouseWheelListener {
 	private static final long serialVersionUID = 1L;
 
 	private final Warp warp;
@@ -60,6 +62,7 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 		addGLEventListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		addMouseWheelListener(this);
 
 		this.warp = warp;
 		this.warpImg = AWTTextureIO.newTextureData(getGLProfile(), warpImg,
@@ -198,5 +201,13 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 		y = 1.0f - y;
 		activeTool.mouseMove(x, y, mat);
 		repaint();
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
+			meshTool.incRadius(-e.getUnitsToScroll());
+			repaint();
+		}
 	}
 }

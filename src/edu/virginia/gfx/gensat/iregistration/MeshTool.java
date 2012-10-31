@@ -25,9 +25,9 @@ public class MeshTool implements InteractiveRenderable {
 	private float radius = 0.05f;
 	private float radiusDelta = 0.01f;
 	private float minRadius = 0.01f;
-	private float maxRadius = 0.10f;
+	private float maxRadius = 0.20f;
 
-	private final float[] mouse = new float[2];
+	private final float[] mouse;
 
 	public MeshTool(Warp warp, GLProfile profile) throws IOException {
 		this.warp = warp;
@@ -42,8 +42,9 @@ public class MeshTool implements InteractiveRenderable {
 		TextureData solid = AWTTextureIO.newTextureData(profile, solidStream,
 				true, "png");
 
-		this.pointRenderer = new PointRenderer(new TextureData[] { hollow,
-				solid }, mouse, 0, 0x0000ffff);
+		mouse = new float[2];
+		pointRenderer = new PointRenderer(new TextureData[] { solid },
+				mouse, 0, 0x0000ff77);
 	}
 
 	private final float[] tmpMat = new float[16];
@@ -78,23 +79,26 @@ public class MeshTool implements InteractiveRenderable {
 	@Override
 	public void mouseMove(float mx, float my, float[] mat) {
 		mouseToMeshSpace(mx, my, mat, curMouse);
+		mouse[0] = curMouse[0];
+		mouse[1] = curMouse[1];
 		if (dragging) {
 			int x = (int) (warp.width * curMouse[0]);
 			int y = (int) (warp.width * curMouse[1]);
 			float dx = curMouse[0] - prevMouse[0];
 			float dy = curMouse[1] - prevMouse[1];
-			// warp.warpX[warp.getWarpImgIndex(x, y)] -= 65535 * dx / 2;
-			// warp.warpY[warp.getWarpImgIndex(x, y)] -= 65535 * dy / 2;
-			warp.addGaussWarp(curMouse[0], curMouse[1], 0.15f, -65535 * dx / 2, -65535 * dy / 2);
+			warp.addGaussWarp(curMouse[0], curMouse[1], radius,
+					-65535 * dx / 2, -65535 * dy / 2);
 		}
 		float[] tmp = prevMouse;
 		prevMouse = curMouse;
 		curMouse = tmp;
+		
 	}
 
 	@Override
 	public void render(GL2 gl, float[] parent) {
-		// do nothing
+		pointRenderer.radius = radius * 3;
+		pointRenderer.render(gl, parent);
 	}
 
 	@Override
@@ -105,5 +109,11 @@ public class MeshTool implements InteractiveRenderable {
 	@Override
 	public void init(GL2 gl) {
 		pointRenderer.init(gl);
+	}
+
+	public void incRadius(int amount) {
+		radius += radiusDelta * amount;
+		radius = Math.min(maxRadius, radius);
+		radius = Math.max(minRadius, radius);
 	}
 }
