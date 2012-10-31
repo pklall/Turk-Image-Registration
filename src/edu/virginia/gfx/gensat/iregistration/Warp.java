@@ -55,7 +55,11 @@ public class Warp {
 		return (float) Math.exp(-(t * t) / (2 * sigma * sigma));
 	}
 
-	private void addGaussWarp(float cx, float cy, float sigma, float scale,
+	public static interface Operator {
+		public short operate(short value, float weight);
+	}
+
+	private void operateGauss(float cx, float cy, float sigma, Operator o,
 			short[] data) {
 		// we'll consider the relevant domain to be [sx, sx + wx]x[sy, sy + wy]
 		float radx = sigma * 3 * width;
@@ -79,25 +83,26 @@ public class Warp {
 				float iyw = (float) (iy - cy * height) / (float) height;
 				// evaluate the gaussian function here
 				float gval = gauss((float) Math.sqrt(ixw * ixw + iyw * iyw),
-						sigma) * scale;
+						sigma);
 				int index = getWarpImgIndex(ix, iy);
-				data[index] += gval;
+				data[index] = o.operate(data[index], gval);
 			}
 		}
 	}
 
 	/**
-	 * Adds the scaled radial Gaussian function centered at (cx, cy) with sd =
-	 * sigma to the warp.
+	 * Performs a weighted operation on both the x and y components of the warp,
+	 * independently, weightec according to a radial gaussian function centered
+	 * at (cx, cy) with standard deviation, sigma.
 	 * 
 	 * @param cx
 	 * @param cy
 	 * @param sigma
+	 * @param o
 	 */
-	public void addGaussWarp(float cx, float cy, float sigma, float scaleX,
-			float scaleY) {
-		addGaussWarp(cx, cy, sigma, scaleX, warpX);
-		addGaussWarp(cx, cy, sigma, scaleY, warpY);
+	public void operateGauss(float cx, float cy, float sigma, Operator ox, Operator oy) {
+		operateGauss(cx, cy, sigma, ox, warpX);
+		operateGauss(cx, cy, sigma, oy, warpY);
 	}
 
 	/**

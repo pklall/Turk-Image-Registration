@@ -9,6 +9,7 @@ import javax.media.opengl.GLProfile;
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 
+import edu.virginia.gfx.gensat.iregistration.Warp.Operator;
 import edu.virginia.gfx.gensat.iregistration.util.InteractiveRenderable;
 import edu.virginia.gfx.gensat.iregistration.util.Matrix;
 import edu.virginia.gfx.gensat.iregistration.util.PointRenderer;
@@ -21,6 +22,16 @@ public class MeshTool implements InteractiveRenderable {
 	private final Warp warp;
 
 	private final PointRenderer pointRenderer;
+
+	public enum ToolMode {
+		STRETCH, ERASE, SMOOTH
+	}
+
+	private ToolMode toolMode = ToolMode.STRETCH;
+
+	public void setToolMode(ToolMode mode) {
+		this.toolMode = mode;
+	}
 
 	private float radius = 0.05f;
 	private float radiusDelta = 0.01f;
@@ -43,8 +54,8 @@ public class MeshTool implements InteractiveRenderable {
 				true, "png");
 
 		mouse = new float[2];
-		pointRenderer = new PointRenderer(new TextureData[] { solid },
-				mouse, 0, 0x0000ff77);
+		pointRenderer = new PointRenderer(new TextureData[] { solid }, mouse,
+				0, 0x0000ff77);
 	}
 
 	private final float[] tmpMat = new float[16];
@@ -68,7 +79,16 @@ public class MeshTool implements InteractiveRenderable {
 	@Override
 	public void mouseDown(float mx, float my, int buttons, float[] mat) {
 		dragging = true;
-		System.out.println("mouse down");
+		switch(buttons) {
+		case 1:
+			setToolMode(ToolMode.STRETCH);
+			break;
+		case 2:
+		case 3:
+			setToolMode(ToolMode.ERASE);
+			break;
+		}
+		System.out.println("mouse down: " + buttons);
 	}
 
 	@Override
@@ -84,15 +104,45 @@ public class MeshTool implements InteractiveRenderable {
 		if (dragging) {
 			int x = (int) (warp.width * curMouse[0]);
 			int y = (int) (warp.width * curMouse[1]);
-			float dx = curMouse[0] - prevMouse[0];
-			float dy = curMouse[1] - prevMouse[1];
-			warp.addGaussWarp(curMouse[0], curMouse[1], radius,
-					-65535 * dx / 2, -65535 * dy / 2);
+			final float dx = curMouse[0] - prevMouse[0];
+			final float dy = curMouse[1] - prevMouse[1];
+			switch (toolMode) {
+			case STRETCH:
+				warp.operateGauss(curMouse[0], curMouse[1], radius,
+						new Operator() {
+							public short operate(short value, float weight) {
+								return (short) (value - weight * dx * Short.MAX_VALUE
+										/ 2.0f);
+							}
+						}, new Operator() {
+							public short operate(short value, float weight) {
+								return (short) (value - weight * dy * Short.MAX_VALUE
+										/ 2.0f);
+							}
+						});
+				break;
+			case ERASE:
+				warp.operateGauss(curMouse[0], curMouse[1], radius,
+						new Operator() {
+							public short operate(short value, float weight) {
+								weight *= 0.50;
+								return (short) ((1.0f - weight) * value + (weight) * Short.MAX_VALUE / 2.0f);
+							}
+						}, new Operator() {
+							public short operate(short value, float weight) {
+								weight *= 0.50;
+								return (short) ((1.0f - weight) * value + (weight) * Short.MAX_VALUE / 2.0f);
+							}
+						});
+				break;
+			case SMOOTH:
+				break;
+			}
 		}
 		float[] tmp = prevMouse;
 		prevMouse = curMouse;
 		curMouse = tmp;
-		
+
 	}
 
 	@Override
