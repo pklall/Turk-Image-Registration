@@ -10,13 +10,10 @@ import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 
 import edu.virginia.gfx.gensat.iregistration.Warp.Operator;
+import edu.virginia.gfx.gensat.iregistration.Warp.RawOperator;
 import edu.virginia.gfx.gensat.iregistration.util.InteractiveRenderable;
 import edu.virginia.gfx.gensat.iregistration.util.Matrix;
 import edu.virginia.gfx.gensat.iregistration.util.PointRenderer;
-import edu.virginia.gfx.gensat.iregistration.util.PointSelector;
-import edu.virginia.gfx.gensat.iregistration.util.PointSelector.PointSelectorEventListener;
-import edu.virginia.gfx.gensat.iregistration.util.PointSelectorEvent;
-import edu.virginia.gfx.gensat.iregistration.util.PointSelectorEvent.PointState;
 
 public class MeshTool implements InteractiveRenderable {
 	private final Warp warp;
@@ -33,10 +30,14 @@ public class MeshTool implements InteractiveRenderable {
 		this.toolMode = mode;
 	}
 
+	private float strength = 1.0f;
+	private static final float STRENGTH_MIN = 0.0f;
+	private static final float STRENGTH_MAX = 1.0f;
+
 	private float radius = 0.05f;
-	private float radiusDelta = 0.01f;
-	private float minRadius = 0.01f;
-	private float maxRadius = 0.20f;
+	private static final float RADIUS_DELTA = 0.01f;
+	private static final float RADIUS_MIN = 0.01f;
+	private static final float RADIUS_MAX = 0.20f;
 
 	private final float[] mouse;
 
@@ -79,11 +80,13 @@ public class MeshTool implements InteractiveRenderable {
 	@Override
 	public void mouseDown(float mx, float my, int buttons, float[] mat) {
 		dragging = true;
-		switch(buttons) {
+		switch (buttons) {
 		case 1:
 			setToolMode(ToolMode.STRETCH);
 			break;
 		case 2:
+			setToolMode(ToolMode.SMOOTH);
+			break;
 		case 3:
 			setToolMode(ToolMode.ERASE);
 			break;
@@ -102,40 +105,66 @@ public class MeshTool implements InteractiveRenderable {
 		mouse[0] = curMouse[0];
 		mouse[1] = curMouse[1];
 		if (dragging) {
-			int x = (int) (warp.width * curMouse[0]);
-			int y = (int) (warp.width * curMouse[1]);
 			final float dx = curMouse[0] - prevMouse[0];
 			final float dy = curMouse[1] - prevMouse[1];
 			switch (toolMode) {
 			case STRETCH:
 				warp.operateGauss(curMouse[0], curMouse[1], radius,
 						new Operator() {
-							public short operate(short value, float weight) {
-								return (short) (value - weight * dx * Short.MAX_VALUE
-										/ 2.0f);
+							public float operate(float value, float weight) {
+								weight *= strength;
+								return value - weight * dx;
 							}
 						}, new Operator() {
-							public short operate(short value, float weight) {
-								return (short) (value - weight * dy * Short.MAX_VALUE
-										/ 2.0f);
+							public float operate(float value, float weight) {
+								weight *= strength;
+								return value - weight * dy;
 							}
 						});
 				break;
 			case ERASE:
 				warp.operateGauss(curMouse[0], curMouse[1], radius,
 						new Operator() {
-							public short operate(short value, float weight) {
-								weight *= 0.50;
-								return (short) ((1.0f - weight) * value + (weight) * Short.MAX_VALUE / 2.0f);
+							public float operate(float value, float weight) {
+								weight *= strength;
+								return (1.0f - weight) * value;
 							}
 						}, new Operator() {
-							public short operate(short value, float weight) {
-								weight *= 0.50;
-								return (short) ((1.0f - weight) * value + (weight) * Short.MAX_VALUE / 2.0f);
+							public float operate(float value, float weight) {
+								weight *= strength;
+								return (1.0f - weight) * value;
 							}
 						});
 				break;
 			case SMOOTH:
+				RawOperator avgOperator = new RawOperator() {
+					public void operate(float weight, int x, int y, short[] data) {
+						weight *= strength;
+						// convolution with gaussian kernel evaluated at (x, y)
+						// ugly hack to modify value from closure
+						final float[] totalSum = new float[] { 0.0f };
+						final float[] totalPossible = new float[] { 0.0f };
+						warp.operateGaussRaw((float) x / warp.width, (float) y
+								/ warp.height, radius, new RawOperator() {
+							@Override
+							public void operate(float weight, int x, int y,
+									short[] data) {
+								totalSum[0] += weight
+										* Warp.dequantize(data[warp
+												.getWarpImgIndex(x, y)]);
+								totalPossible[0] += weight;
+							}
+						}, data);
+						float convTot = totalSum[0] / totalPossible[0];
+						int index = warp.getWarpImgIndex(x, y);
+						float original = Warp.dequantize(data[index]);
+						float fin = convTot * weight + (1.0f - weight)
+								* original;
+						data[index] = Warp.quantize(fin);
+					}
+				};
+				warp.operateGaussRaw(curMouse[0], curMouse[1], radius,
+						avgOperator, avgOperator);
 				break;
 			}
 		}
@@ -162,8 +191,17 @@ public class MeshTool implements InteractiveRenderable {
 	}
 
 	public void incRadius(int amount) {
-		radius += radiusDelta * amount;
-		radius = Math.min(maxRadius, radius);
-		radius = Math.max(minRadius, radius);
+		radius += RADIUS_DELTA * amount;
+		radius = Math.min(RADIUS_MAX, radius);
+		radius = Math.max(RADIUS_MIN, radius);
+	}
+
+	/**
+	 * @param s
+	 */
+	public void setStrength(float s) {
+		strength = s;
+		strength = Math.min(STRENGTH_MAX, strength);
+		strength = Math.max(STRENGTH_MIN, strength);
 	}
 }

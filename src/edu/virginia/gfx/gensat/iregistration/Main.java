@@ -6,10 +6,9 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Arrays;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -33,7 +32,7 @@ public class Main extends JApplet {
 		// float[] points = new float[] { 0, 0, 0, 1, 1, 1, 1, 0 };
 		// int[] triangles = new int[] { 0, 1, 2, 0, 2, 3 };
 
-		Warp warp = new Warp(300, 300);
+		Warp warp = new Warp(50, 50);
 
 		BufferedImage imgWarp = null;
 		BufferedImage imgTarget = null;
@@ -52,6 +51,7 @@ public class Main extends JApplet {
 			// "http://www.gensat.org/atlas/ADULT_ATLAS_07.jpg"));
 			imgWarp = ImageIO.read(getClass()
 					.getResource("/ADULT_ATLAS_07.jpg"));
+			imgWarp = ImageIO.read(new URL("http://www.wyrmcorp.com/galleries/illusions/Hermann%20Grid.png"));
 			// imgTarget = ImageIO
 			// .read(getClass().getResourceAsStream("/brain2.jpg"));
 		} catch (MalformedURLException e) {

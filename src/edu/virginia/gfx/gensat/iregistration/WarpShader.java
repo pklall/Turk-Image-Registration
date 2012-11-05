@@ -37,11 +37,13 @@ public class WarpShader extends Shader {
 			"uniform mat3 uTexMatrix; ",//
 			"uniform vec4 uColor; ",//
 			"void main() { ",//
+			"   float x = texture2D(uWarpX, vTexCoord.xy).r;",//
+			"   float y = texture2D(uWarpY, vTexCoord.xy).r;",//
 			"   vec3 delta; ",//
-			"   delta.x = (texture2D(uWarpX, vTexCoord).r - 0.5) * 2.0; ",//
-			"   delta.y = (texture2D(uWarpY, vTexCoord).r - 0.5) * 2.0; ",//
+			"   delta.x = (x - 0.5) * 2.0; ",//
+			"   delta.y = (y - 0.5) * 2.0; ",//
 			"   delta.z = 0.0; ",//
-			// "   gl_FragColor = vec4(uTexMatrix * delta, 1.0) * uColor; ",//
+			// "   gl_FragColor = vec4(x, y, 0, 1.0) * uColor; ",//
 			"   gl_FragColor = texture2D(uTex, uTexMatrix * (vTexCoord + delta)) * uColor; ",//
 			// "   gl_FragColor.a = 1.0; ",//
 			// "   gl_FragColor *= uColor; ",//
