@@ -3,6 +3,7 @@ package edu.virginia.gfx.gensat.iregistration;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Transparency;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -49,9 +50,9 @@ public class Main extends JApplet {
 			// "http://www.vnvlvokc.com/ow_userfiles/plugins/shoppro/images/product_1.jpg"));
 			// imgWarp = ImageIO.read(new URL(
 			// "http://www.gensat.org/atlas/ADULT_ATLAS_07.jpg"));
-			imgWarp = ImageIO.read(getClass()
-					.getResource("/ADULT_ATLAS_07.jpg"));
-			imgWarp = ImageIO.read(new URL("http://www.wyrmcorp.com/galleries/illusions/Hermann%20Grid.png"));
+			// imgWarp = ImageIO.read(getClass() .getResource("/ADULT_ATLAS_07.jpg"));
+			imgWarp = ImageIO.read(getClass() .getResource("/atlas2.png"));
+			// imgWarp = ImageIO.read(new URL("http://www.wyrmcorp.com/galleries/illusions/Hermann%20Grid.png"));
 			// imgTarget = ImageIO
 			// .read(getClass().getResourceAsStream("/brain2.jpg"));
 		} catch (MalformedURLException e) {
@@ -75,6 +76,31 @@ public class Main extends JApplet {
 
 		initEditor();
 
+		final JSlider radiusSlider = new JSlider();
+		radiusSlider.setMaximum(255);
+		radiusSlider.setMinimum(0);
+		radiusSlider.setValue(255);
+		radiusSlider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				editor.getMeshTool()
+						.setRadius(radiusSlider.getValue() / 255.0f);
+				editor.repaint();
+			}
+		});
+
+		final JSlider strengthSlider = new JSlider();
+		strengthSlider.setMaximum(255);
+		strengthSlider.setMinimum(0);
+		strengthSlider.setValue(255);
+		strengthSlider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				editor.getMeshTool().setStrength(
+						strengthSlider.getValue() / 255.0f);
+			}
+		});
+
 		final JSlider alphaSlider = new JSlider();
 		alphaSlider.setMaximum(255);
 		alphaSlider.setMinimum(0);
@@ -86,39 +112,6 @@ public class Main extends JApplet {
 			}
 		});
 
-		// FIXME These are terrible UI labels
-		final JRadioButton editWarpRadioButton = new JRadioButton("Edit Warp");
-		editWarpRadioButton.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				if (editWarpRadioButton.isSelected()) {
-					editor.setEditorModeWarp();
-				}
-			}
-		});
-		final JRadioButton editAffineRadioButton = new JRadioButton(
-				"Edit Affine");
-		editAffineRadioButton.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				if (editAffineRadioButton.isSelected()) {
-					editor.setEditorModeAffine();
-				}
-			}
-		});
-		final ButtonGroup editButtonGroup = new ButtonGroup();
-		editButtonGroup.add(editWarpRadioButton);
-		editButtonGroup.add(editAffineRadioButton);
-		final JPanel topPanel = new JPanel();
-		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.LINE_AXIS));
-		topPanel.add(editAffineRadioButton);
-		topPanel.add(editWarpRadioButton);
-
-		// start with the affine button selected
-		editAffineRadioButton.setSelected(true);
-		editor.setEditorModeAffine();
-		editWarpRadioButton.setSelected(false);
-
 		final JButton submitButton = new JButton("Submit");
 		submitButton.addActionListener(new ActionListener() {
 			@Override
@@ -127,11 +120,14 @@ public class Main extends JApplet {
 			}
 		});
 
-		JSeparator sep = new JSeparator(SwingConstants.VERTICAL);
-		sep.setMinimumSize(new Dimension(20, 0));
-		// FIXME separator causes strange layout behavior
-		// topPanel.add(sep);
-		topPanel.add(new JLabel("Transparency: "));
+		final JPanel topPanel = new JPanel();
+		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.LINE_AXIS));
+
+		topPanel.add(new JLabel("    Strength: "));
+		topPanel.add(strengthSlider);
+		topPanel.add(new JLabel("    Radius: "));
+		topPanel.add(radiusSlider);
+		topPanel.add(new JLabel("    Transparency: "));
 		topPanel.add(alphaSlider);
 		topPanel.add(submitButton);
 

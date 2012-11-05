@@ -54,6 +54,10 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 	private MeshTool meshTool;
 
 	private InteractiveRenderable activeTool;
+	
+	public MeshTool getMeshTool() {
+		return meshTool;
+	}
 
 	public Editor(Warp warp, BufferedImage warpImg, BufferedImage targetImg)
 			throws IOException {
@@ -91,7 +95,7 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 		GL2 gl = d.getGL().getGL2();
 		gl.glEnable(GL2.GL_BLEND);
 
-		gl.glClearColor(1, 0, 0, 1);
+		gl.glClearColor(0, 0, 0, 1);
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
 		gl.glDisable(GL2.GL_DEPTH_TEST);
 		gl.glDisable(GL2.GL_CULL_FACE);

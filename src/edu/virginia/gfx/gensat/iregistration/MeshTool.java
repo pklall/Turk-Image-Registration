@@ -39,6 +39,8 @@ public class MeshTool implements InteractiveRenderable {
 	private static final float RADIUS_MIN = 0.01f;
 	private static final float RADIUS_MAX = 0.20f;
 
+	private static final int POINTER_COLOR = 0x0000ff00;
+
 	private final float[] mouse;
 
 	public MeshTool(Warp warp, GLProfile profile) throws IOException {
@@ -56,7 +58,7 @@ public class MeshTool implements InteractiveRenderable {
 
 		mouse = new float[2];
 		pointRenderer = new PointRenderer(new TextureData[] { solid }, mouse,
-				0, 0x0000ff77);
+				0, POINTER_COLOR);
 	}
 
 	private final float[] tmpMat = new float[16];
@@ -85,10 +87,10 @@ public class MeshTool implements InteractiveRenderable {
 			setToolMode(ToolMode.STRETCH);
 			break;
 		case 2:
-			setToolMode(ToolMode.SMOOTH);
+			setToolMode(ToolMode.ERASE);
 			break;
 		case 3:
-			setToolMode(ToolMode.ERASE);
+			setToolMode(ToolMode.SMOOTH);
 			break;
 		}
 		System.out.println("mouse down: " + buttons);
@@ -177,6 +179,8 @@ public class MeshTool implements InteractiveRenderable {
 	@Override
 	public void render(GL2 gl, float[] parent) {
 		pointRenderer.radius = radius * 3;
+		pointRenderer.color[0] = POINTER_COLOR
+				+ (int) (strength * 255.0f / 2.0f + 255.0f / 16.0f);
 		pointRenderer.render(gl, parent);
 	}
 
@@ -198,10 +202,21 @@ public class MeshTool implements InteractiveRenderable {
 
 	/**
 	 * @param s
+	 *            Float in range [0, 1]
 	 */
 	public void setStrength(float s) {
 		strength = s;
 		strength = Math.min(STRENGTH_MAX, strength);
 		strength = Math.max(STRENGTH_MIN, strength);
+	}
+
+	/**
+	 * @param r
+	 *            Float in range [0, 1]
+	 */
+	public void setRadius(float r) {
+		radius = (RADIUS_MAX - RADIUS_MIN) * r + RADIUS_MIN;
+		radius = Math.min(RADIUS_MAX, radius);
+		radius = Math.max(RADIUS_MIN, radius);
 	}
 }

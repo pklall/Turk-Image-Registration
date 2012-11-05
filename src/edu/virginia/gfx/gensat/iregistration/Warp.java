@@ -1,12 +1,6 @@
 package edu.virginia.gfx.gensat.iregistration;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Arrays;
-
-import com.thoughtworks.xstream.XStream;
-
-import edu.virginia.gfx.gensat.iregistration.util.Matrix;
 
 /**
  * A warp is the composition of an affine transformation with a deformation
@@ -108,7 +102,8 @@ public class Warp {
 				// the (x, y) indices into the data matrix
 				int ix = (int) (x);
 				int iy = (int) (y);
-				// the location of the indices relative to the center of the gaussian
+				// the location of the indices relative to the center of the
+				// gaussian
 				float ixw = (float) (ix - cx * width) / (float) width;
 				float iyw = (float) (iy - cy * height) / (float) height;
 				// evaluate the gaussian function here
@@ -155,7 +150,8 @@ public class Warp {
 				// the (x, y) indices into the data matrix
 				int ix = (int) (x);
 				int iy = (int) (y);
-				// the location of the indices relative to the center of the gaussian
+				// the location of the indices relative to the center of the
+				// gaussian
 				float ixw = (float) (ix - cx * width) / (float) width;
 				float iyw = (float) (iy - cy * height) / (float) height;
 				// evaluate the gaussian function here
