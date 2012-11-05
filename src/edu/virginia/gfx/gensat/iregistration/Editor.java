@@ -27,10 +27,12 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 		MouseMotionListener, MouseWheelListener {
 	private static final long serialVersionUID = 1L;
 
-	private final Warp warp;
+	private Warp warp;
 
-	private final TextureData warpImg;
-	private final TextureData targetImg;
+	private TextureData warpImg;
+	private TextureData targetImg;
+
+	private boolean init = false;
 
 	public void submit() {
 		// TODO implement this!
@@ -54,13 +56,12 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 	private MeshTool meshTool;
 
 	private InteractiveRenderable activeTool;
-	
+
 	public MeshTool getMeshTool() {
 		return meshTool;
 	}
 
-	public Editor(Warp warp, BufferedImage warpImg, BufferedImage targetImg)
-			throws IOException {
+	public Editor(Warp warp, BufferedImage warpImg, BufferedImage targetImg) {
 		super(new GLCapabilities(GLProfile.get(GLProfile.GL2)));
 
 		addGLEventListener(this);
@@ -68,17 +69,7 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 		addMouseMotionListener(this);
 		addMouseWheelListener(this);
 
-		this.warp = warp;
-		this.warpImg = AWTTextureIO.newTextureData(getGLProfile(), warpImg,
-				true);
-		this.targetImg = AWTTextureIO.newTextureData(getGLProfile(), targetImg,
-				true);
-		meshTool = new MeshTool(warp, getGLProfile());
-		warpRenderer = new WarpRenderer(this.warpImg, warp);
-		setAlpha(128);
-		targetRenderer = new SquareRenderer(this.targetImg);
-
-		activeTool = meshTool;
+		reset(warp, warpImg, targetImg);
 	}
 
 	public void setEditorModeAffine() {
@@ -92,6 +83,11 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 
 	@Override
 	public void display(GLAutoDrawable d) {
+		if (init) {
+			init(d);
+			init = false;
+		}
+
 		GL2 gl = d.getGL().getGL2();
 		gl.glEnable(GL2.GL_BLEND);
 
@@ -128,7 +124,6 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 	@Override
 	public void setSize(int width, int height) {
 		super.setSize(width, height);
-
 	}
 
 	@Override
@@ -213,5 +208,28 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 			meshTool.incRadius(-e.getUnitsToScroll());
 			repaint();
 		}
+	}
+
+	public void reset(Warp warp, BufferedImage warpImg, BufferedImage targetImg) {
+		this.warp = warp;
+		if (this.warpImg != null) {
+			this.warpImg.destroy();
+		}
+		this.warpImg = AWTTextureIO.newTextureData(getGLProfile(), warpImg,
+				true);
+		if (this.targetImg != null) {
+			this.targetImg.destroy();
+		}
+		this.targetImg = AWTTextureIO.newTextureData(getGLProfile(), targetImg,
+				true);
+		meshTool = new MeshTool(warp, getGLProfile());
+
+		warpRenderer = new WarpRenderer(this.warpImg, warp);
+		setAlpha(128);
+		targetRenderer = new SquareRenderer(this.targetImg);
+
+		activeTool = meshTool;
+
+		init = true;
 	}
 }

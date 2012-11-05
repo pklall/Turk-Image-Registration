@@ -1,5 +1,6 @@
 package edu.virginia.gfx.gensat.iregistration;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -43,18 +44,28 @@ public class MeshTool implements InteractiveRenderable {
 
 	private final float[] mouse;
 
-	public MeshTool(Warp warp, GLProfile profile) throws IOException {
+	public MeshTool(Warp warp, GLProfile profile) {
 		this.warp = warp;
 
 		InputStream hollowStream = MeshTool.class
 				.getResourceAsStream("/circle_hollow.png");
-		TextureData hollow = AWTTextureIO.newTextureData(profile, hollowStream,
-				true, "png");
+		try {
+			TextureData hollow = AWTTextureIO.newTextureData(profile,
+					hollowStream, true, "png");
+		} catch (Exception e) {
+
+		}
 
 		InputStream solidStream = MeshTool.class
 				.getResourceAsStream("/circle_full.png");
-		TextureData solid = AWTTextureIO.newTextureData(profile, solidStream,
-				true, "png");
+		TextureData solid;
+		try {
+			solid = AWTTextureIO.newTextureData(profile, solidStream, true,
+					"png");
+		} catch (Exception e) {
+			solid = AWTTextureIO.newTextureData(profile, new BufferedImage(0,
+					0, BufferedImage.TYPE_BYTE_GRAY), false);
+		}
 
 		mouse = new float[2];
 		pointRenderer = new PointRenderer(new TextureData[] { solid }, mouse,
