@@ -24,7 +24,7 @@ import edu.virginia.gfx.gensat.iregistration.util.Matrix;
 import edu.virginia.gfx.gensat.iregistration.util.SquareRenderer;
 
 public class Editor extends GLJPanel implements GLEventListener, MouseListener,
-		MouseMotionListener, MouseWheelListener {
+		MouseMotionListener {
 	private static final long serialVersionUID = 1L;
 
 	private Warp warp;
@@ -67,7 +67,6 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 		addGLEventListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		addMouseWheelListener(this);
 
 		reset(warp, warpImg, targetImg);
 	}
@@ -200,14 +199,6 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 		y = 1.0f - y;
 		activeTool.mouseMove(x, y, mat);
 		repaint();
-	}
-
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
-			meshTool.incRadius(-e.getUnitsToScroll());
-			repaint();
-		}
 	}
 
 	public void reset(Warp warp, BufferedImage warpImg, BufferedImage targetImg) {

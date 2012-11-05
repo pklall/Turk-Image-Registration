@@ -1,20 +1,13 @@
 package edu.virginia.gfx.gensat.iregistration;
 
-import java.awt.BorderLayout;
-import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
-import javax.swing.JApplet;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -44,9 +37,9 @@ public class EditorPanel extends JPanel {
 			// imgWarp = ImageIO .read(new URL(
 			// "http://cdn6.fotosearch.com/bthumb/FDS/FDS106/redkid4.jpg"));
 
-			imgTarget = ImageIO.read(getClass().getResourceAsStream(
-					"/brain.jpg"));
-			imgTarget = ImageIO.read(new URL(imgUrl));
+			imgWarp = ImageIO.read(getClass()
+					.getResourceAsStream("/atlas2.png"));
+			// imgTarget = ImageIO.read(new URL(imgUrl));
 			// imgTarget = ImageIO .read(new URL(
 			// "http://www.vnvlvokc.com/ow_userfiles/plugins/shoppro/images/product_1.jpg"));
 
@@ -54,11 +47,11 @@ public class EditorPanel extends JPanel {
 			// "http://www.gensat.org/atlas/ADULT_ATLAS_07.jpg"));
 			// imgWarp = ImageIO.read(getClass()
 			// .getResource("/ADULT_ATLAS_07.jpg"));
-			imgWarp = ImageIO.read(getClass().getResource("/atlas2.png"));
-			// imgWarp = ImageIO.read(new
+			// imgWarp = ImageIO.read(getClass().getResource("/atlas2.png"));
+			// imgWarp = ImageIO.read(new //
 			// URL("http://www.wyrmcorp.com/galleries/illusions/Hermann%20Grid.png"));
-			// imgTarget = ImageIO
-			// .read(getClass().getResourceAsStream("/brain2.jpg"));
+			imgTarget = ImageIO.read(getClass().getResourceAsStream(
+					"/brain2.jpg"));
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -132,6 +125,18 @@ public class EditorPanel extends JPanel {
 
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		add(editorControlPanel);
+		editor.addMouseWheelListener(new MouseWheelListener() {
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
+					editor.getMeshTool().incRadius(-e.getUnitsToScroll());
+					float r = editor.getMeshTool().getRadius();
+					int sliderVal = (int) ((r - MeshTool.RADIUS_MIN) / (MeshTool.RADIUS_MAX - MeshTool.RADIUS_MIN) * 255);
+					radiusSlider.setValue(sliderVal);
+					repaint();
+				}
+			}
+		});
 		add(editor);
 
 		System.out.println("done");

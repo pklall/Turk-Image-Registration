@@ -36,9 +36,9 @@ public class MeshTool implements InteractiveRenderable {
 	private static final float STRENGTH_MAX = 1.0f;
 
 	private float radius = 0.05f;
-	private static final float RADIUS_DELTA = 0.01f;
-	private static final float RADIUS_MIN = 0.01f;
-	private static final float RADIUS_MAX = 0.20f;
+	private static final float RADIUS_DELTA = 0.005f;
+	public static final float RADIUS_MIN = 0.01f;
+	public static final float RADIUS_MAX = 0.20f;
 
 	private static final int POINTER_COLOR = 0x0000ff00;
 
@@ -209,6 +209,10 @@ public class MeshTool implements InteractiveRenderable {
 		radius += RADIUS_DELTA * amount;
 		radius = Math.min(RADIUS_MAX, radius);
 		radius = Math.max(RADIUS_MIN, radius);
+	}
+	
+	public float getRadius() {
+		return radius;
 	}
 
 	/**
