@@ -61,7 +61,7 @@ public class Warp {
 	}
 
 	/**
-	 * Quantizes a float in range [1, 1] to a short in range [0,
+	 * Quantizes a float in range [-1, 1] to a short in range [0,
 	 * Short.MAX_VALUE]
 	 */
 	public static short quantize(float value) {
@@ -69,6 +69,45 @@ public class Warp {
 		value = Math.max(-1.0f, value);
 		value = Math.min(1.0f, value);
 		return (short) (((value / 2.0f) + 0.5f) * Short.MAX_VALUE);
+	}
+	
+	/**
+	 * Clamps the value at the given (x, y) coordinates in data[] to a value
+	 * which ensures mesh invertibility given it's local neighbors.
+	 * 
+	 * Specifically this ensures that the function f(x, y) = (x, y) + w(x, y)
+	 * where w(x, y) is the R^2->R^2 function defined by this warp is monotonically
+	 * increasing in both x and y.
+	 * 
+	 * Note that this does NOT guarantee invertibility since f(x, y) across diagonals may not be invertible
+	 * 
+	 * @param x
+	 * @param y
+	 * @param data
+	 */
+	public void clampToInvertible(int x, int y) {
+		// smallest delta between subsequent warp samples
+		float epsilon = 3 * 2.0f / Short.MAX_VALUE;
+		
+		float valX = dequantize(warpX[getWarpImgIndex(x, y)]);
+		float strideX = 1.0f / width;
+		float valXLeft = dequantize(warpX[getWarpImgIndex(Math.max(0, x - 1), y)]);
+		float minX = valXLeft - strideX + epsilon;
+		float valXRight = dequantize(warpX[getWarpImgIndex(Math.min(width - 1, x + 1), y)]);
+		float maxX = valXRight + strideX - epsilon;
+		valX = (float) Math.max(minX, valX);
+		valX = (float) Math.min(maxX, valX);
+		warpX[getWarpImgIndex(x, y)] = quantize(valX);
+		
+		float valY = dequantize(warpY[getWarpImgIndex(x, y)]);
+		float strideY = (float) (1.0f / height);
+		float valYTop = dequantize(warpY[getWarpImgIndex(x, Math.max(0, y - 1))]);
+		float minY = valYTop - strideY + epsilon;
+		float valYBottom = dequantize(warpY[getWarpImgIndex(x, Math.min(height - 1, y + 1))]);
+		float maxY = valYBottom + strideY - epsilon;
+		valY = (float) Math.max(minY, valY);
+		valY = (float) Math.min(maxY, valY);
+		warpY[getWarpImgIndex(x, y)] = quantize(valY);
 	}
 
 	private float gauss(float t, float sigma) {
@@ -112,6 +151,7 @@ public class Warp {
 				int index = getWarpImgIndex(ix, iy);
 				data[index] = (short) quantize(o.operate(
 						dequantize(data[index]), gval));
+				clampToInvertible(ix, iy);
 			}
 		}
 	}
