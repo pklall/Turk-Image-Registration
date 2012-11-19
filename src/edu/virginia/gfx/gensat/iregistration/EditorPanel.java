@@ -5,6 +5,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -20,45 +21,40 @@ public class EditorPanel extends JPanel {
 
 	private String name;
 	private String imgUrl;
+	
+	public Warp getWarp() {
+		return editor.getWarp();
+	}
 
-	protected void initEditor() {
+	protected void initEditor() throws Exception {
 		// float[] points = new float[] { 0, 0, 0, 1, 1, 1, 1, 0 };
 		// int[] triangles = new int[] { 0, 1, 2, 0, 2, 3 };
 
-		Warp warp = new Warp(50, 50);
+		Warp warp = new Warp(32, 32);
 
 		BufferedImage imgWarp = null;
 		BufferedImage imgTarget = null;
-		try {
-			// test image
-			// imgWarp = ImageIO.read(new URL(
-			// "http://colorvisiontesting.com/plate%20with%205.jpg"));
-			// bean
-			// imgWarp = ImageIO .read(new URL(
-			// "http://cdn6.fotosearch.com/bthumb/FDS/FDS106/redkid4.jpg"));
+		// test image
+		// imgWarp = ImageIO.read(new URL(
+		// "http://colorvisiontesting.com/plate%20with%205.jpg"));
+		// bean
+		// imgWarp = ImageIO .read(new URL(
+		// "http://cdn6.fotosearch.com/bthumb/FDS/FDS106/redkid4.jpg"));
 
-			imgWarp = ImageIO.read(getClass()
-					.getResourceAsStream("/atlas2.png"));
-			// imgTarget = ImageIO.read(new URL(imgUrl));
-			// imgTarget = ImageIO .read(new URL(
-			// "http://www.vnvlvokc.com/ow_userfiles/plugins/shoppro/images/product_1.jpg"));
+		// imgWarp = ImageIO.read(getClass()
+		// .getResourceAsStream("/atlas2.png"));
+		// imgTarget = ImageIO.read(new URL(imgUrl));
+		// imgTarget = ImageIO .read(new URL(
+		// "http://www.vnvlvokc.com/ow_userfiles/plugins/shoppro/images/product_1.jpg"));
 
-			// imgWarp = ImageIO.read(new URL(
-			// "http://www.gensat.org/atlas/ADULT_ATLAS_07.jpg"));
-			// imgWarp = ImageIO.read(getClass()
-			// .getResource("/ADULT_ATLAS_07.jpg"));
-			// imgWarp = ImageIO.read(getClass().getResource("/atlas2.png"));
-			// imgWarp = ImageIO.read(new //
-			// URL("http://www.wyrmcorp.com/galleries/illusions/Hermann%20Grid.png"));
-			imgTarget = ImageIO.read(getClass().getResourceAsStream(
-					"/brain2.jpg"));
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// imgWarp = ImageIO.read(new
+		// URL("http://www.gensat.org/atlas/ADULT_ATLAS_07.jpg"));
+		// imgWarp = ImageIO.read(getClass()
+		// .getResource("/ADULT_ATLAS_07.jpg"));
+		imgWarp = ImageIO.read(getClass().getResource("/ADULT_ATLAS_07.jpg"));
+		// imgWarp = ImageIO .read(new URL(
+		// "http://www.wyrmcorp.com/galleries/illusions/Hermann%20Grid.png"));
+		imgTarget = ImageIO.read(new URL(imgUrl));
 
 		try {
 			if (editor == null) {
@@ -73,7 +69,7 @@ public class EditorPanel extends JPanel {
 		}
 	}
 
-	public EditorPanel(String name, String imgUrl) {
+	public EditorPanel(String name, String imgUrl) throws Exception {
 		reset(name, imgUrl);
 
 		// Editor-related controls
@@ -131,7 +127,8 @@ public class EditorPanel extends JPanel {
 				if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
 					editor.getMeshTool().incRadius(-e.getUnitsToScroll());
 					float r = editor.getMeshTool().getRadius();
-					int sliderVal = (int) ((r - MeshTool.RADIUS_MIN) / (MeshTool.RADIUS_MAX - MeshTool.RADIUS_MIN) * 255);
+					int sliderVal = (int) ((r - MeshTool.RADIUS_MIN)
+							/ (MeshTool.RADIUS_MAX - MeshTool.RADIUS_MIN) * 255);
 					radiusSlider.setValue(sliderVal);
 					repaint();
 				}
@@ -147,7 +144,7 @@ public class EditorPanel extends JPanel {
 		editor.destroy();
 	}
 
-	public void reset(String gene, String url) {
+	public void reset(String gene, String url) throws Exception {
 		this.name = gene;
 		this.imgUrl = url;
 

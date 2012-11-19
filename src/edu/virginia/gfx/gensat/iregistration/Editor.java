@@ -223,4 +223,8 @@ public class Editor extends GLJPanel implements GLEventListener, MouseListener,
 
 		init = true;
 	}
+
+	public Warp getWarp() {
+		return warp;
+	}
 }

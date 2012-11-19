@@ -1,6 +1,10 @@
 package edu.virginia.gfx.gensat.iregistration;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
+
+import com.thoughtworks.xstream.XStream;
 
 /**
  * A warp is the composition of an affine transformation with a deformation
@@ -224,5 +228,18 @@ public class Warp {
 		warpY = new short[height * width];
 		Arrays.fill(warpX, (short) (Short.MAX_VALUE / 2));
 		Arrays.fill(warpY, (short) (Short.MAX_VALUE / 2));
+	}
+	
+
+	public void writeWarp(OutputStream os) {
+		XStream xstream = new XStream();
+		xstream.alias("Warp", Warp.class);
+		xstream.toXML(this, os);
+	}
+
+	public static Warp readWarp(InputStream is) {
+		XStream xstream = new XStream();
+		xstream.alias("Warp", Warp.class);
+		return (Warp) xstream.fromXML(is);
 	}
 }
