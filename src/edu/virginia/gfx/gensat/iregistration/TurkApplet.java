@@ -12,23 +12,32 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
-import javax.swing.JApplet;
+import javax.media.opengl.GLProfile;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
-public class TurkApplet extends JApplet {
+public class TurkApplet extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	// FIXME
-	// private static String urlRoot =
-	// "ftp://ftp.ncbi.nih.gov/pub/gensat/Genes";
-	private static String urlRoot = "http://localhost:8000/";
+	// private static String urlRoot = "ftp://ftp.ncbi.nih.gov/pub/gensat/Genes/";
+	private static String urlRoot = "http://localhost:8000/data/";
 
 	private EditorPanel editor;
 
 	private String geneName;
 	private String geneUrl;
+
+	public static void main(String[] args) {
+		TurkApplet applet = new TurkApplet();
+		applet.init();
+		applet.setSize(550, 300);
+		applet.start();
+		applet.setVisible(true);
+		applet.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
 
 	private Map<String, String> parseParams(String parameters) {
 		StringTokenizer paramGroup = new StringTokenizer(parameters, "&");
@@ -44,6 +53,8 @@ public class TurkApplet extends JApplet {
 
 	public void init() {
 		System.out.println("initializing... ");
+		GLProfile.initSingleton();
+
 		getContentPane().setLayout(new BorderLayout());
 		// Map<String, String> params =
 		// parseParams(getDocumentBase().getQuery());
@@ -52,7 +63,7 @@ public class TurkApplet extends JApplet {
 		// geneUrl = params.get("geneurl");
 		geneUrl = "Csf2rb2_adult_S_DAB_10X_08_cryo.med.jpg";
 		geneName = "csf2rb2";
-		
+
 		final JDialog loading = new JDialog();
 		loading.setSize(200, 100);
 		loading.setTitle("Loading");
@@ -66,13 +77,15 @@ public class TurkApplet extends JApplet {
 						public BufferedImage getImage(String url)
 								throws IOException {
 							/*
-							loading.add(new JLabel("Loading image at: " + url));
-							Image i = TurkApplet.this.getImage(new URL(url));
-							loading.add(new JLabel("Success!"));
-							BufferedImage img = new BufferedImage(i.getWidth(null), i.getHeight(null), BufferedImage.TYPE_INT_RGB);
-							img.getGraphics().drawImage(i, 0, 0, null);
-							return img;
-							*/
+							 * loading.add(new JLabel("Loading image at: " +
+							 * url)); Image i = TurkApplet.this.getImage(new
+							 * URL(url)); loading.add(new JLabel("Success!"));
+							 * BufferedImage img = new
+							 * BufferedImage(i.getWidth(null),
+							 * i.getHeight(null), BufferedImage.TYPE_INT_RGB);
+							 * img.getGraphics().drawImage(i, 0, 0, null);
+							 * return img;
+							 */
 							return ImageIO.read(new URL(url));
 						}
 					});

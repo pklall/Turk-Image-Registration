@@ -55,21 +55,21 @@ public class Mesh2DShader extends Shader {
 		uColorHandle = gl.glGetUniformLocation(program, "uColor");
 	}
 
-	public void use(GL2 gl, float[] vertex, float[] texture, int[] index,
-			float[] vertexMatrix, Texture warpTexture, int color) {
-		if(gl.glGetError() != GL2.GL_NO_ERROR) {
+	public void use(GL2 gl, FloatBuffer vertex, FloatBuffer texture,
+			IntBuffer index, float[] vertexMatrix, Texture warpTexture,
+			int color) {
+		if (gl.glGetError() != GL2.GL_NO_ERROR) {
 			System.err.println("Error at beginning of Mesh2DShader");
 		}
 		gl.glUseProgram(program);
-		
-		gl.glVertexAttribPointer(aVertHandle, 2, GL2.GL_FLOAT, false, 0,
-				(Buffer) FloatBuffer.wrap(vertex));
+
+		gl.glVertexAttribPointer(aVertHandle, 2, GL2.GL_FLOAT, false, 0, vertex);
 		gl.glEnableVertexAttribArray(aVertHandle);
 
 		gl.glVertexAttribPointer(aTexCoordHandle, 2, GL2.GL_FLOAT, false, 0,
-				(Buffer) FloatBuffer.wrap(texture));
+				texture);
 		gl.glEnableVertexAttribArray(aTexCoordHandle);
-		
+
 		gl.glActiveTexture(GL2.GL_TEXTURE0);
 		warpTexture.bind(gl);
 		gl.glUniform1i(uTexHandle, 0);
@@ -92,9 +92,9 @@ public class Mesh2DShader extends Shader {
 				((color >> 8) & 0xff) / 255.0f, // blue
 				((color >> 0) & 0xff) / 255.0f); // alpha
 
-		gl.glDrawElements(GL2.GL_TRIANGLES, index.length, GL2.GL_UNSIGNED_INT,
-				(Buffer) IntBuffer.wrap(index));
-		if(gl.glGetError() != GL2.GL_NO_ERROR) {
+		gl.glDrawElements(GL2.GL_TRIANGLES, index.capacity(),
+				GL2.GL_UNSIGNED_INT, index);
+		if (gl.glGetError() != GL2.GL_NO_ERROR) {
 			System.err.println("Error at end of Mesh2DShader");
 		}
 	}

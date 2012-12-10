@@ -1,5 +1,9 @@
 package edu.virginia.gfx.gensat.iregistration.util;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import javax.media.opengl.GL2;
@@ -12,6 +16,34 @@ public class PointRenderer implements Renderable {
 			0.5f, 0.5f, -0.5f, 0.5f };
 	private final float[] sqTex = new float[] { 0, 0, 1, 0, 1, 1, 0, 1 };
 	private final int[] triangles = new int[] { 0, 1, 2, 0, 2, 3 };
+
+	private static FloatBuffer sqVertBuf;
+	private static FloatBuffer sqTexBuf;
+	private static IntBuffer trianglesBuf;
+
+	{
+		if (sqVertBuf == null) {
+			ByteBuffer buf = ByteBuffer.allocateDirect(sqVert.length * 4);
+			buf.order(ByteOrder.nativeOrder());
+			sqVertBuf = buf.asFloatBuffer();
+			sqVertBuf.put(sqVert);
+			sqVertBuf.rewind();
+		}
+		if (sqTexBuf == null) {
+			ByteBuffer buf = ByteBuffer.allocateDirect(sqTex.length * 4);
+			buf.order(ByteOrder.nativeOrder());
+			sqTexBuf = buf.asFloatBuffer();
+			sqTexBuf.put(sqTex);
+			sqTexBuf.rewind();
+		}
+		if (trianglesBuf == null) {
+			ByteBuffer buf = ByteBuffer.allocateDirect(triangles.length * 4);
+			buf.order(ByteOrder.nativeOrder());
+			trianglesBuf = buf.asIntBuffer();
+			trianglesBuf.put(triangles);
+			trianglesBuf.rewind();
+		}
+	}
 
 	private Mesh2DShader shader;
 
@@ -77,8 +109,8 @@ public class PointRenderer implements Renderable {
 			// when acting on the center of the point we're rendering
 			mat[12] = translation[0];
 			mat[13] = translation[1];
-			shader.use(gl, sqVert, sqTex, triangles, mat, tex[texIndex[i]],
-					color[i]);
+			shader.use(gl, sqVertBuf, sqTexBuf, trianglesBuf, mat,
+					tex[texIndex[i]], color[i]);
 		}
 	}
 

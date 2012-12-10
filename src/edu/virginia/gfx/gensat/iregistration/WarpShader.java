@@ -10,15 +10,12 @@ import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureCoords;
 
 import edu.virginia.gfx.gensat.iregistration.util.Shader;
+import edu.virginia.gfx.gensat.iregistration.util.SquareRenderer;
 
 /**
  * A shader for rendering textured 2D triangle meshes
  */
 public class WarpShader extends Shader {
-	private final float[] sqVert = new float[] { 0, 0, 1, 0, 1, 1, 0, 1 };
-	private final float[] sqTex = new float[] { 0, 0, 1, 0, 1, 1, 0, 1 };
-	private final int[] triangles = new int[] { 0, 1, 2, 0, 2, 3 };
-
 	private static final String[] VERTEX = new String[] { "", //
 			"uniform mat4 uVertMatrix;",//
 			"attribute vec2 aVert;",//
@@ -82,11 +79,11 @@ public class WarpShader extends Shader {
 		gl.glUseProgram(program);
 
 		gl.glVertexAttribPointer(aVertHandle, 2, GL2.GL_FLOAT, false, 0,
-				(Buffer) FloatBuffer.wrap(sqVert));
+				SquareRenderer.getSquareVert());
 		gl.glEnableVertexAttribArray(aVertHandle);
 
 		gl.glVertexAttribPointer(aTexCoordHandle, 2, GL2.GL_FLOAT, false, 0,
-				(Buffer) FloatBuffer.wrap(sqTex));
+				SquareRenderer.getSquareTex());
 		gl.glEnableVertexAttribArray(aTexCoordHandle);
 
 		if (gl.glGetError() != GL2.GL_NO_ERROR) {
@@ -123,8 +120,8 @@ public class WarpShader extends Shader {
 				((color >> 8) & 0xff) / 255.0f, // blue
 				((color >> 0) & 0xff) / 255.0f); // alpha
 
-		gl.glDrawElements(GL2.GL_TRIANGLES, triangles.length,
-				GL2.GL_UNSIGNED_INT, (Buffer) IntBuffer.wrap(triangles));
+		IntBuffer triangles = SquareRenderer.getSquareTriangles();
+		gl.glDrawElements(GL2.GL_TRIANGLES, 6, GL2.GL_UNSIGNED_INT, triangles);
 		if (gl.glGetError() != GL2.GL_NO_ERROR) {
 			System.err.println("Error at end of WarpShader");
 		}

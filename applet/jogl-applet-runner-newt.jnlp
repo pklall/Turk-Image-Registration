@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp codebase="http://jogamp.org/deployment/jogamp-current" href="jogl-applet-runner-newt.jnlp" version="v2.0-rc3">
+  <information>
+    <title>JOGL JNLP Applet Runner NEWT</title>
+    <vendor>JogAmp Community</vendor>
+    <homepage href="http://jogamp.org/"/>
+    <description>JOGL JNLP Applet Runner NEWT</description>
+    <offline-allowed/>
+  </information>
+  <update check="background" policy="always"/>
+
+    <resources>
+      <j2se href="http://java.sun.com/products/autodl/j2se" version="1.4+"/>
+      <property name="sun.java2d.noddraw" value="true"/>
+      <jar href="geneReg.jar" main="true"/>
+      <extension name="jogl-all-awt" href="http://jogamp.org/deployment/jogamp-current/jogl-all-awt.jnlp" />
+    </resources>
+
+  <applet-desc 
+      name="Turk Applet"
+      main-class="edu.virginia.gfx.gensat.iregistration.TurkApplet"
+      width="200" 
+      height="200">
+  </applet-desc>
+</jnlp>
+

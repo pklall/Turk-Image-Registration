@@ -4,16 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import javax.swing.JApplet;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 
-public class Test extends JApplet {
+public class Test extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	private static String urlRoot = "ftp://ftp.ncbi.nih.gov/pub/gensat/Genes";

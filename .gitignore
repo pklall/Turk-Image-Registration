@@ -1,5 +1,5 @@
 bin/*
-applet/*
+applet/data
 
 # Compiled source #
 ###################
