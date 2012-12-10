@@ -2,16 +2,18 @@ package edu.virginia.gfx.gensat.iregistration;
 
 import java.awt.BorderLayout;
 import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MediaTracker;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javax.imageio.ImageIO;
 import javax.media.opengl.GLProfile;
 import javax.swing.JApplet;
 import javax.swing.JDialog;
@@ -21,23 +23,21 @@ import javax.swing.JTextArea;
 public class TurkApplet extends JApplet {
 	private static final long serialVersionUID = 1L;
 
-	// FIXME
-	// private static String urlRoot = "ftp://ftp.ncbi.nih.gov/pub/gensat/Genes/";
-	private static String urlRoot = "http://localhost:8000/data/";
-
 	private EditorPanel editor;
 
-	private String geneName;
-	private String geneUrl;
+	private String name;
+	private String url;
 
 	private Map<String, String> parseParams(String parameters) {
 		StringTokenizer paramGroup = new StringTokenizer(parameters, "&");
 		HashMap<String, String> params = new HashMap<String, String>();
+		URLDecoder decoder = new URLDecoder();
 
 		while (paramGroup.hasMoreTokens()) {
 			StringTokenizer value = new StringTokenizer(paramGroup.nextToken(),
 					"=");
-			params.put(value.nextToken(), value.nextToken());
+			params.put(decoder.decode(value.nextToken()),
+					decoder.decode(value.nextToken()));
 		}
 		return params;
 	}
@@ -47,13 +47,10 @@ public class TurkApplet extends JApplet {
 		GLProfile.initSingleton();
 
 		getContentPane().setLayout(new BorderLayout());
-		// Map<String, String> params =
-		// parseParams(getDocumentBase().getQuery());
+		Map<String, String> params = parseParams(getDocumentBase().getQuery());
 
-		// geneName = params.get("genename");
-		// geneUrl = params.get("geneurl");
-		geneUrl = "Csf2rb2_adult_S_DAB_10X_08_cryo.med.jpg";
-		geneName = "csf2rb2";
+		name = params.get("name");
+		url = params.get("url");
 
 		final JDialog loading = new JDialog();
 		loading.setSize(200, 100);
@@ -62,24 +59,24 @@ public class TurkApplet extends JApplet {
 		loading.setVisible(true);
 		try {
 			loading.add(new JLabel("Creating editor..."));
-			editor = new EditorPanel(geneName, urlRoot + geneUrl,
-					new ImageLoader() {
-						@Override
-						public BufferedImage getImage(String url)
-								throws IOException {
-							/*
-							 * loading.add(new JLabel("Loading image at: " +
-							 * url)); Image i = TurkApplet.this.getImage(new
-							 * URL(url)); loading.add(new JLabel("Success!"));
-							 * BufferedImage img = new
-							 * BufferedImage(i.getWidth(null),
-							 * i.getHeight(null), BufferedImage.TYPE_INT_RGB);
-							 * img.getGraphics().drawImage(i, 0, 0, null);
-							 * return img;
-							 */
-							return ImageIO.read(new URL(url));
-						}
-					});
+			editor = new EditorPanel(name, url, new ImageLoader() {
+				@Override
+				public BufferedImage getImage(String url) throws IOException {
+					// loading.add(new JLabel("Loading image at: " + url));
+					Image i = TurkApplet.this.getImage(new URL(url));
+					MediaTracker tracker = new MediaTracker(TurkApplet.this);
+					tracker.addImage(i, 0);
+					try {
+						tracker.waitForAll();
+					} catch (InterruptedException e) {
+					}
+					BufferedImage img = new BufferedImage(i.getWidth(null),
+							i.getHeight(null), BufferedImage.TYPE_INT_RGB);
+					img.getGraphics().drawImage(i, 0, 0, null);
+					return img;
+					// return ImageIO.read(new URL(url));
+				}
+			});
 			loading.add(new JLabel("Created editor"));
 			getContentPane().add(editor, BorderLayout.CENTER);
 		} catch (Throwable t) {
@@ -97,17 +94,13 @@ public class TurkApplet extends JApplet {
 	}
 
 	public String getWarp() {
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		editor.getWarp().writeWarp(os);
-		return new String(os.toByteArray());
-	}
-
-	public String getGene() {
-		return geneName;
-	}
-
-	public String getGeneUrl() {
-		return geneUrl;
+		try {
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			editor.getWarp().writeWarp(os);
+			return new String(os.toByteArray());
+		} catch (Throwable t) {
+			return new String(t.getMessage());
+		}
 	}
 
 	public void start() {

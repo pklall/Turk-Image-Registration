@@ -22,7 +22,7 @@ public class EditorPanel extends JPanel {
 	private String name;
 	private String imgUrl;
 	private ImageLoader imageLoader;
-	
+
 	public Warp getWarp() {
 		return editor.getWarp();
 	}
@@ -70,7 +70,8 @@ public class EditorPanel extends JPanel {
 		}
 	}
 
-	public EditorPanel(String name, String imgUrl, ImageLoader imageLoader) throws Exception {
+	public EditorPanel(String name, String imgUrl, ImageLoader imageLoader)
+			throws Exception {
 		this.imageLoader = imageLoader;
 		reset(name, imgUrl);
 
