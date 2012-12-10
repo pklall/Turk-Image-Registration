@@ -13,12 +13,12 @@ import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
 import javax.media.opengl.GLProfile;
+import javax.swing.JApplet;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
-public class TurkApplet extends JFrame {
+public class TurkApplet extends JApplet {
 	private static final long serialVersionUID = 1L;
 
 	// FIXME
@@ -29,15 +29,6 @@ public class TurkApplet extends JFrame {
 
 	private String geneName;
 	private String geneUrl;
-
-	public static void main(String[] args) {
-		TurkApplet applet = new TurkApplet();
-		applet.init();
-		applet.setSize(550, 300);
-		applet.start();
-		applet.setVisible(true);
-		applet.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
 
 	private Map<String, String> parseParams(String parameters) {
 		StringTokenizer paramGroup = new StringTokenizer(parameters, "&");

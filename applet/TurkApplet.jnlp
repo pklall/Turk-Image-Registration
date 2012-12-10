@@ -19,6 +19,9 @@
     <jar href="geneReg.jar" main="true"/>
   </resources>
 
-  <application-desc main-class="edu.virginia.gfx.gensat.iregistration.TurkApplet">
-  </application-desc>
+  <applet-desc
+	  name="Turk Applet"
+	  width="900"
+	  height="600"
+	  main-class="edu.virginia.gfx.gensat.iregistration.TurkApplet"/>
 </jnlp>
