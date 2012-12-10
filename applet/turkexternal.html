@@ -1,8 +1,26 @@
 <html>
 <head>
+<title>Title!</title>
+<script type="application/javascript">
+	function gup( name ){
+	   name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+	   var regexS = "[\\?&]"+name+"=([^&#]*)";
+	   var regex = new RegExp( regexS );
+	   var results = regex.exec( window.location.href );
+	   if( results == null )
+	      return "";
+	   else
+	      return results[1];
+	}
+	function onSubmit(){
+		document.getElementById("warpResult").value = document.getElementById("warpApplet").getWarp();
+		document.getElementById("assignmentID").value = gup("assignmentID");
+		return true;
+	}
+    </script>
 </head>
 <body>
-	<object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"
+	<!--object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"
 		width="900" height="600">
 		<param name="code" value="org.jdesktop.applet.util.JNLPAppletLauncher">
 		<param name="archive"
@@ -21,25 +39,35 @@
 		<param name="jnlpExtension1"
 			value="http://jogamp.org/deployment/jogamp-current/jogl-all-awt.jnlp">
 		<param name="java_arguments" value="-Dsun.java2d.noddraw=true">
-		<param name="jnlp_href" value="TurkApplet.jnlp">
-		<comment> <embed
-			code="org.jdesktop.applet.util.JNLPAppletLauncher" width="900"
-			height="600" type="application/x-java-applet;version=1.6"
-			pluginspage="http://java.sun.com/javase/downloads/ea.jsp"
-			archive="http://jogamp.org/deployment/jogamp-current/jar/applet-launcher.jar,
+		<param name="jnlp_href" value="TurkApplet.jnlp"-->
+	<embed id="warpApplet"
+		code="org.jdesktop.applet.util.JNLPAppletLauncher"
+		width="900"
+		height="600"
+		type="application/x-java-applet;version=1.6"
+		pluginspage="http://java.sun.com/javase/downloads/ea.jsp"
+		archive="http://jogamp.org/deployment/jogamp-current/jar/applet-launcher.jar,
                    http://jogamp.org/deployment/jogamp-current/jar/gluegen-rt.jar,
                    http://jogamp.org/deployment/jogamp-current/jar/jogl-all.jar,
                    reg.jar"
-			codebase_lookup="" value="false"
-			subapplet.classname="edu.virginia.gfx.gensat.iregistration.TurkApplet"
-			subapplet.displayname="Turk Applet" noddraw.check="true"
-			mayscript="true"
-			progressbar="true" jnlpNumExtensions="1"
-			jnlpExtension1="http://jogamp.org/deployment/jogamp-current/jogl-all-awt.jnlp"
-			java_arguments="-Dsun.java2d.noddraw=true"
-			jnlp_href="TurkApplet.jnlp">
-			<noembed>Sorry, no Java support detected.</noembed>
-		</embed> </comment>
-	</object>
+		codebase_lookup=""
+		value="false"
+		subapplet.classname="edu.virginia.gfx.gensat.iregistration.TurkApplet"
+		subapplet.displayname="Turk Applet"
+		noddraw.check="true"
+		mayscript="true"
+		progressbar="true"
+		jnlpNumExtensions="1"
+		jnlpExtension1="http://jogamp.org/deployment/jogamp-current/jogl-all-awt.jnlp"
+		java_arguments="-Dsun.java2d.noddraw=true"
+		jnlp_href="TurkApplet.jnlp">
+		<noembed>You must have java installed to complete this HIT.</noembed>
+	</embed>
+	<form name="input" action="http://www.mturk.com/mturk/externalSubmit"
+		method="post">
+		<input id="warpResult" type="hidden" name="result" value=""> <input
+			id="assignmentID" type="hidden" name="assignmentId" value="">
+		<input type="submit" value="Submit" onClick="return onSubmit();">
+	</form>
 </body>
 </html>
