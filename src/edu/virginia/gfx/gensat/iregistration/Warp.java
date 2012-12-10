@@ -1,10 +1,15 @@
 package edu.virginia.gfx.gensat.iregistration;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Arrays;
 
-import com.thoughtworks.xstream.XStream;
+import base64.Base64;
 
 /**
  * A warp is the composition of an affine transformation with a deformation
@@ -74,16 +79,17 @@ public class Warp {
 		value = Math.min(1.0f, value);
 		return (short) (((value / 2.0f) + 0.5f) * Short.MAX_VALUE);
 	}
-	
+
 	/**
 	 * Clamps the value at the given (x, y) coordinates in data[] to a value
 	 * which ensures mesh invertibility given it's local neighbors.
 	 * 
 	 * Specifically this ensures that the function f(x, y) = (x, y) + w(x, y)
-	 * where w(x, y) is the R^2->R^2 function defined by this warp is monotonically
-	 * increasing in both x and y.
+	 * where w(x, y) is the R^2->R^2 function defined by this warp is
+	 * monotonically increasing in both x and y.
 	 * 
-	 * Note that this does NOT guarantee invertibility since f(x, y) across diagonals may not be invertible
+	 * Note that this does NOT guarantee invertibility since f(x, y) across
+	 * diagonals may not be invertible
 	 * 
 	 * @param x
 	 * @param y
@@ -92,22 +98,24 @@ public class Warp {
 	public void clampToInvertible(int x, int y) {
 		// smallest delta between subsequent warp samples
 		float epsilon = 3 * 2.0f / Short.MAX_VALUE;
-		
+
 		float valX = dequantize(warpX[getWarpImgIndex(x, y)]);
 		float strideX = 1.0f / width;
 		float valXLeft = dequantize(warpX[getWarpImgIndex(Math.max(0, x - 1), y)]);
 		float minX = valXLeft - strideX + epsilon;
-		float valXRight = dequantize(warpX[getWarpImgIndex(Math.min(width - 1, x + 1), y)]);
+		float valXRight = dequantize(warpX[getWarpImgIndex(
+				Math.min(width - 1, x + 1), y)]);
 		float maxX = valXRight + strideX - epsilon;
 		valX = (float) Math.max(minX, valX);
 		valX = (float) Math.min(maxX, valX);
 		warpX[getWarpImgIndex(x, y)] = quantize(valX);
-		
+
 		float valY = dequantize(warpY[getWarpImgIndex(x, y)]);
 		float strideY = (float) (1.0f / height);
 		float valYTop = dequantize(warpY[getWarpImgIndex(x, Math.max(0, y - 1))]);
 		float minY = valYTop - strideY + epsilon;
-		float valYBottom = dequantize(warpY[getWarpImgIndex(x, Math.min(height - 1, y + 1))]);
+		float valYBottom = dequantize(warpY[getWarpImgIndex(x,
+				Math.min(height - 1, y + 1))]);
 		float maxY = valYBottom + strideY - epsilon;
 		valY = (float) Math.max(minY, valY);
 		valY = (float) Math.min(maxY, valY);
@@ -229,17 +237,29 @@ public class Warp {
 		Arrays.fill(warpX, (short) (Short.MAX_VALUE / 2));
 		Arrays.fill(warpY, (short) (Short.MAX_VALUE / 2));
 	}
-	
 
-	public void writeWarp(OutputStream os) {
-		XStream xstream = new XStream();
-		xstream.alias("Warp", Warp.class);
-		xstream.toXML(this, os);
+	private String toBase64(short[] arr) throws IOException {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(bos);
+		for (int i = 0; i < arr.length; i++) {
+			dos.writeShort(arr[i]);
+		}
+		dos.flush();
+		bos.flush();
+		return Base64.encodeBytes(bos.toByteArray());
+	}
+
+	public void writeWarp(OutputStream os) throws IOException {
+		Writer w = new OutputStreamWriter(os);
+		w.write(width + "\n");
+		w.write(height + "\n");
+
+		w.write(toBase64(warpX) + "\n");
+		w.write(toBase64(warpY) + "\n");
+		w.flush();
 	}
 
 	public static Warp readWarp(InputStream is) {
-		XStream xstream = new XStream();
-		xstream.alias("Warp", Warp.class);
-		return (Warp) xstream.fromXML(is);
+		return null;
 	}
 }

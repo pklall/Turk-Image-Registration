@@ -99,7 +99,7 @@ public class TurkApplet extends JApplet {
 			editor.getWarp().writeWarp(os);
 			return new String(os.toByteArray());
 		} catch (Throwable t) {
-			return new String(t.getMessage());
+			return new String("");
 		}
 	}
 
