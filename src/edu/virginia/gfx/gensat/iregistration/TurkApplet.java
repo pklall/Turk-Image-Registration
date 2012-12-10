@@ -2,18 +2,28 @@ package edu.virginia.gfx.gensat.iregistration;
 
 import java.awt.BorderLayout;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.imageio.ImageIO;
 import javax.swing.JApplet;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JTextArea;
 
 public class TurkApplet extends JApplet {
 	private static final long serialVersionUID = 1L;
 
-	private static String urlRoot = "ftp://ftp.ncbi.nih.gov/pub/gensat/Genes";
+	// FIXME
+	// private static String urlRoot =
+	// "ftp://ftp.ncbi.nih.gov/pub/gensat/Genes";
+	private static String urlRoot = "http://localhost:8000/";
 
 	private EditorPanel editor;
 
@@ -35,22 +45,51 @@ public class TurkApplet extends JApplet {
 	public void init() {
 		System.out.println("initializing... ");
 		getContentPane().setLayout(new BorderLayout());
-		Map<String, String> params = parseParams(getDocumentBase().getQuery());
+		// Map<String, String> params =
+		// parseParams(getDocumentBase().getQuery());
 
 		// geneName = params.get("genename");
 		// geneUrl = params.get("geneurl");
-		geneUrl = "/csf2rb2/Csf2rb2_adult_S_DAB_IF334_31_20070501-1132_05_11_07/Csf2rb2_adult_S_DAB_10X_08_cryo.med.jpg";
+		geneUrl = "Csf2rb2_adult_S_DAB_10X_08_cryo.med.jpg";
 		geneName = "csf2rb2";
-
-
+		
+		final JDialog loading = new JDialog();
+		loading.setSize(200, 100);
+		loading.setTitle("Loading");
+		loading.add(new JLabel("Loading... please wait"));
+		loading.setVisible(true);
 		try {
-			editor = new EditorPanel(geneName, urlRoot + geneUrl);
-		} catch (Exception e) {
+			loading.add(new JLabel("Creating editor..."));
+			editor = new EditorPanel(geneName, urlRoot + geneUrl,
+					new ImageLoader() {
+						@Override
+						public BufferedImage getImage(String url)
+								throws IOException {
+							/*
+							loading.add(new JLabel("Loading image at: " + url));
+							Image i = TurkApplet.this.getImage(new URL(url));
+							loading.add(new JLabel("Success!"));
+							BufferedImage img = new BufferedImage(i.getWidth(null), i.getHeight(null), BufferedImage.TYPE_INT_RGB);
+							img.getGraphics().drawImage(i, 0, 0, null);
+							return img;
+							*/
+							return ImageIO.read(new URL(url));
+						}
+					});
+			loading.add(new JLabel("Created editor"));
+			getContentPane().add(editor, BorderLayout.CENTER);
+		} catch (Throwable t) {
 			JDialog errorDialog = new JDialog();
-			errorDialog.setTitle("Error:  Unable to load task!");
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			t.printStackTrace(new PrintStream(os, true));
+			errorDialog.setTitle("Error");
+			errorDialog.add(new JTextArea(new String(os.toByteArray())));
+			errorDialog.setSize(200, 100);
 			errorDialog.setVisible(true);
 		}
-		getContentPane().add(editor, BorderLayout.CENTER);
+		loading.add(new JLabel("Done"));
+		loading.setVisible(false);
+		loading.dispose();
 	}
 
 	public String getWarp() {

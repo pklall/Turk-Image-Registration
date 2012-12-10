@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -49,7 +51,7 @@ public class Test extends JApplet {
 				String url = urlRoot + imgPaths.get(index);
 				if (editor == null) {
 					try {
-						editor = new EditorPanel(gene, url);
+						editor = new EditorPanel(gene, url, new ImageIOImageLoader());
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
@@ -66,7 +68,8 @@ public class Test extends JApplet {
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(imgChooser, BorderLayout.NORTH);
 		try {
-			editor = new EditorPanel(genes.get(0), urlRoot + imgPaths.get(0));
+			editor = new EditorPanel(genes.get(0), urlRoot + imgPaths.get(0),
+					new ImageIOImageLoader());
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}

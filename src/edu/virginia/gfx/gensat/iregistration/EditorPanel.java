@@ -21,6 +21,7 @@ public class EditorPanel extends JPanel {
 
 	private String name;
 	private String imgUrl;
+	private ImageLoader imageLoader;
 	
 	public Warp getWarp() {
 		return editor.getWarp();
@@ -54,7 +55,7 @@ public class EditorPanel extends JPanel {
 		imgWarp = ImageIO.read(getClass().getResource("/ADULT_ATLAS_07.jpg"));
 		// imgWarp = ImageIO .read(new URL(
 		// "http://www.wyrmcorp.com/galleries/illusions/Hermann%20Grid.png"));
-		imgTarget = ImageIO.read(new URL(imgUrl));
+		imgTarget = imageLoader.getImage(imgUrl);
 
 		try {
 			if (editor == null) {
@@ -69,7 +70,8 @@ public class EditorPanel extends JPanel {
 		}
 	}
 
-	public EditorPanel(String name, String imgUrl) throws Exception {
+	public EditorPanel(String name, String imgUrl, ImageLoader imageLoader) throws Exception {
+		this.imageLoader = imageLoader;
 		reset(name, imgUrl);
 
 		// Editor-related controls
@@ -137,7 +139,7 @@ public class EditorPanel extends JPanel {
 		add(editor);
 
 		System.out.println("done");
-		repaint();
+		// repaint();
 	}
 
 	public void dispose() {

@@ -4,10 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import javax.imageio.ImageIO;
 import javax.swing.JApplet;
 import javax.swing.JComboBox;
 
@@ -48,16 +53,33 @@ public class Main extends JApplet {
 				String gene = genes.get(index);
 				String url = urlRoot + imgPaths.get(index);
 				if (editor == null) {
-					editor = new EditorPanel(gene, url);
+					try {
+						editor = new EditorPanel(gene, url,
+								new ImageIOImageLoader());
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					getContentPane().add(editor, BorderLayout.CENTER);
 				}
-				editor.reset(gene, url);
+				try {
+					editor.reset(gene, url);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(imgChooser, BorderLayout.NORTH);
-		editor = new EditorPanel(genes.get(0), urlRoot + imgPaths.get(0));
+		try {
+			editor = new EditorPanel(genes.get(0), urlRoot + imgPaths.get(0),
+					new ImageIOImageLoader());
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		getContentPane().add(editor, BorderLayout.CENTER);
 	}
 
